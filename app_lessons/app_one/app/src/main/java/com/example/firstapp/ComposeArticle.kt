@@ -42,14 +42,16 @@ fun ComposeArticle(
     )
     Text(
       text = stringResource(R.string.second_text),
-      fontSize = 13.sp,
-      modifier = Modifier.padding(end = 14.dp, start = 14.dp),
+      fontSize = 14.sp,
+      modifier = Modifier.padding(end = 0.dp, start = 16.dp),
+      lineHeight = 20.sp,
       textAlign = TextAlign.Justify
     )
     Text(
       text = stringResource(R.string.third_text),
-      fontSize = 13.sp,
-      modifier = Modifier.padding(top = 8.dp, end = 14.dp, start = 14.dp),
+      fontSize = 14.sp,
+      modifier = Modifier.padding(top = 10.dp, end = 0.dp, start = 16.dp),
+      lineHeight = 20.sp,
       textAlign = TextAlign.Justify
     )
     TextButton(

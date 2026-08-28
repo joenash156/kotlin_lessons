@@ -11,10 +11,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +30,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.firstapp.ui.theme.FirstAppTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 
 
 class MainActivity : ComponentActivity() {
@@ -36,14 +42,29 @@ class MainActivity : ComponentActivity() {
     enableEdgeToEdge()
     setContent {
       FirstAppTheme {
-        Surface (
-          modifier = Modifier.fillMaxSize(),
+        var currentScreen by remember { mutableStateOf("main") }
+
+        Surface(
+          modifier = Modifier.fillMaxSize().safeDrawingPadding(),
           color = MaterialTheme.colorScheme.background
         ) {
-          GreetingImage(
-            message = stringResource(R.string.welcome_message_to_joshua),
-            from = stringResource(R.string.signature_text)
-          )
+
+          when (currentScreen) {
+
+            "main" -> GreetingImage(
+              message = stringResource(R.string.welcome_message_to_joshua),
+              from = stringResource(R.string.signature_text),
+              onComposeArticleClick = {
+                currentScreen = "composable_article"
+              }
+            )
+
+            "composable_article" -> ComposeArticle(
+              onBackClick = {
+                currentScreen = "main"
+              }
+            )
+          }
         }
       }
     }
@@ -73,7 +94,7 @@ fun GreetingText(message: String, from: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun GreetingImage(message: String, from: String, modifier: Modifier = Modifier) {
+fun GreetingImage(message: String, from: String, onComposeArticleClick: () -> Unit, modifier: Modifier = Modifier) {
   // Get the image
   val image = painterResource(R.drawable.androidparty)
   Box(modifier) {
@@ -90,6 +111,12 @@ fun GreetingImage(message: String, from: String, modifier: Modifier = Modifier) 
         .fillMaxSize()
         .padding(8.dp)
     )
+    TextButton(
+      onClick = onComposeArticleClick,
+      modifier = Modifier.align(Alignment.BottomCenter)
+    ) {
+      Text("Go to Compose Article")
+    }
   }
 }
 
@@ -97,6 +124,6 @@ fun GreetingImage(message: String, from: String, modifier: Modifier = Modifier) 
 @Composable
 fun GreetingPreview() {
   FirstAppTheme {
-    GreetingImage(stringResource(R.string.welcome_message_to_joshua), from = stringResource(R.string.signature_text))
+    GreetingImage(stringResource(R.string.welcome_message_to_joshua), from = stringResource(R.string.signature_text), onComposeArticleClick = {})
   }
 }

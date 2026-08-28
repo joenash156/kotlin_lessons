@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">FirstApp</string>
+    <string name="welcome_message_to_joshua">You\'re welcome Joshua!</string>
+    <string name="signature_text">— Dave</string>
+</resources>

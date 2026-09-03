@@ -55,13 +55,31 @@ class MainActivity : ComponentActivity() {
               message = stringResource(R.string.welcome_message_to_joshua),
               from = stringResource(R.string.signature_text),
               onComposeArticleClick = {
-                currentScreen = "composable_article"
+                currentScreen = "compose_article"
               }
             )
 
-            "composable_article" -> ComposeArticle(
+            "compose_article" -> ComposeArticle(
               onBackClick = {
                 currentScreen = "main"
+              },
+              onForwardClick = {
+                currentScreen = "task_manager"
+              }
+            )
+
+            "task_manager" -> TaskManager(
+              onBackClick = {
+                currentScreen = "compose_article"
+              },
+              onForwardClick = {
+                currentScreen = "compose_quadrant"
+              }
+            )
+
+            "compose_quadrant" -> ComposeQuadrant(
+              onBackClick = {
+                currentScreen = "task_manager"
               }
             )
           }

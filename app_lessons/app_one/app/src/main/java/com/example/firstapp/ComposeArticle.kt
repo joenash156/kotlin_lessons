@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun ComposeArticle(
   onBackClick: () -> Unit,
+  onForwardClick: () -> Unit,
   modifier: Modifier = Modifier
 ) {
 
@@ -37,28 +38,31 @@ fun ComposeArticle(
     )
     Text(
       text = stringResource(R.string.jetpack_compose_tutorial),
-      fontSize = 22.sp,
-      modifier = Modifier.padding(12.dp)
+      fontSize = 24.sp,
+      modifier = Modifier.padding(16.dp)
     )
     Text(
       text = stringResource(R.string.second_text),
-      fontSize = 14.sp,
-      modifier = Modifier.padding(end = 0.dp, start = 16.dp),
-      lineHeight = 20.sp,
+      modifier = Modifier.padding(end = 16.dp, start = 16.dp),
       textAlign = TextAlign.Justify
     )
     Text(
       text = stringResource(R.string.third_text),
-      fontSize = 14.sp,
-      modifier = Modifier.padding(top = 10.dp, end = 0.dp, start = 16.dp),
-      lineHeight = 20.sp,
+      modifier = Modifier.padding(16.dp),
       textAlign = TextAlign.Justify
     )
     TextButton(
       onClick = onBackClick,
       modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
     ) {
-      Text("Back to Main Page")
+      Text(text = "Back to Main Page")
+    }
+    TextButton(
+      onClick = onForwardClick,
+      modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
+
+    ) {
+      Text(text = "To Task Manager")
     }
   }
 

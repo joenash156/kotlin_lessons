@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.lazy.LazyColumn
 
 @Composable
 fun ComposeArticle(
@@ -27,43 +28,56 @@ fun ComposeArticle(
   onForwardClick: () -> Unit,
   modifier: Modifier = Modifier
 ) {
-
-  Column(modifier) {
-    // Import the image
-    val image = painterResource(R.drawable.bg_compose_background)
-
-    Image(
-      painter = image,
-      contentDescription = null
-    )
-    Text(
-      text = stringResource(R.string.jetpack_compose_tutorial),
-      fontSize = 24.sp,
-      modifier = Modifier.padding(16.dp)
-    )
-    Text(
-      text = stringResource(R.string.second_text),
-      modifier = Modifier.padding(end = 16.dp, start = 16.dp),
-      textAlign = TextAlign.Justify
-    )
-    Text(
-      text = stringResource(R.string.third_text),
-      modifier = Modifier.padding(16.dp),
-      textAlign = TextAlign.Justify
-    )
-    TextButton(
-      onClick = onBackClick,
-      modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
-    ) {
-      Text(text = "Back to Main Page")
+  LazyColumn(
+    modifier = modifier.fillMaxSize()
+  ) {
+    // 1. Put the image in its own item block
+    item {
+      val image = painterResource(R.drawable.bg_compose_background)
+      Image(
+        painter = image,
+        contentDescription = null
+      )
     }
-    TextButton(
-      onClick = onForwardClick,
-      modifier = Modifier.align(alignment = Alignment.CenterHorizontally)
 
-    ) {
-      Text(text = "To Task Manager")
+    // 2. Put the text elements in their own blocks (or group them)
+    item {
+      Text(
+        text = stringResource(R.string.jetpack_compose_tutorial),
+        fontSize = 24.sp,
+        modifier = Modifier.padding(16.dp)
+      )
+    }
+
+    item {
+      Text(
+        text = stringResource(R.string.second_text),
+        modifier = Modifier.padding(horizontal = 16.dp),
+        textAlign = TextAlign.Justify
+      )
+    }
+
+    item {
+      Text(
+        text = stringResource(R.string.third_text),
+        modifier = Modifier.padding(16.dp),
+        textAlign = TextAlign.Justify
+      )
+    }
+
+    // 3. Group the buttons in a single item block and use a standard Column to center them
+    item {
+      Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+      ) {
+        TextButton(onClick = onBackClick) {
+          Text(text = "Back to Main Page")
+        }
+        TextButton(onClick = onForwardClick) {
+          Text(text = "To Task Manager")
+        }
+      }
     }
   }
-
 }

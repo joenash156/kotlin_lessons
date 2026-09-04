@@ -80,6 +80,15 @@ class MainActivity : ComponentActivity() {
             "compose_quadrant" -> ComposeQuadrant(
               onBackClick = {
                 currentScreen = "task_manager"
+              },
+              onForwardClick = {
+                currentScreen = "business_card"
+              }
+            )
+
+            "business_card" -> BusinessCard(
+              onBackClick = {
+                currentScreen = "compose_quadrant"
               }
             )
           }

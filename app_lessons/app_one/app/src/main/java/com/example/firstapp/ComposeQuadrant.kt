@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ComposeQuadrant(
   onBackClick: () -> Unit,
+  onForwardClick: () -> Unit,
   modifier: Modifier = Modifier
 ) {
   Column(
@@ -66,12 +67,27 @@ fun ComposeQuadrant(
       )
 
     }
-    TextButton(
-      modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
-      onClick = onBackClick
+
+    Row(
+      horizontalArrangement = Arrangement.SpaceBetween,
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(end = 12.dp, start = 12.dp)
     ) {
-      Text("Back to Task Manager")
+      TextButton(
+        // modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
+        onClick = onBackClick
+      ) {
+        Text("Back to Task Manager")
+      }
+
+      TextButton(
+        onClick = onForwardClick
+      ) {
+        Text("To Business Card")
+      }
     }
+
   }
 }
 

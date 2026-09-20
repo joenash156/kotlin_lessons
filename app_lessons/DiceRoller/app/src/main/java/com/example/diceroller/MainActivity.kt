@@ -34,11 +34,7 @@ class MainActivity : ComponentActivity() {
     enableEdgeToEdge()
     setContent {
       DiceRollerTheme {
-        DiceWithButtonAndImage(
-          modifier = Modifier
-            .fillMaxSize()
-            .wrapContentSize(Alignment.Center)
-        )
+        DiceRollerApp()
       }
     }
   }
@@ -79,7 +75,8 @@ fun DiceWithButtonAndImage(
       onClick = {
         result = (1..6).random()
       },
-      Modifier.size(140.dp, 42.dp)
+      modifier = Modifier
+        .size(140.dp, 42.dp)
     ) {
       Text(
         text = stringResource(R.string.roll),
@@ -92,5 +89,9 @@ fun DiceWithButtonAndImage(
 @Preview
 @Composable
 fun DiceRollerApp() {
-  DiceWithButtonAndImage()
+  DiceWithButtonAndImage(
+    modifier = Modifier
+      .fillMaxSize()
+      .wrapContentSize(Alignment.Center)
+  )
 }

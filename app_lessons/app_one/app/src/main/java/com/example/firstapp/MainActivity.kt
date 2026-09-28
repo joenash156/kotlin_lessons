@@ -8,21 +8,16 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.VerticalAlignmentLine
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -34,6 +29,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.Alignment
 
 
 class MainActivity : ComponentActivity() {
@@ -56,6 +54,9 @@ class MainActivity : ComponentActivity() {
               from = stringResource(R.string.signature_text),
               onComposeArticleClick = {
                 currentScreen = "compose_article"
+              },
+              onLastAppClick = {
+                currentScreen = "lemonade_app"
               }
             )
 
@@ -89,6 +90,24 @@ class MainActivity : ComponentActivity() {
             "business_card" -> BusinessCard(
               onBackClick = {
                 currentScreen = "compose_quadrant"
+              },
+              onForwardClick = {
+                currentScreen = "text_drawer"
+              }
+            )
+
+            "text_drawer" -> TextDrawer(
+              onBackClick = {
+                currentScreen = "business_card"
+              },
+              onForwardClick = {
+                currentScreen = "lemonade_app"
+              }
+            )
+
+            "lemonade_app" -> LemonadeApp(
+              onBackClick = {
+                currentScreen = "text_drawer"
               }
             )
           }
@@ -121,7 +140,7 @@ fun GreetingText(message: String, from: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun GreetingImage(message: String, from: String, onComposeArticleClick: () -> Unit, modifier: Modifier = Modifier) {
+fun GreetingImage(message: String, from: String, onComposeArticleClick: () -> Unit, onLastAppClick: () -> Unit, modifier: Modifier = Modifier) {
   // Get the image
   val image = painterResource(R.drawable.androidparty)
   Box(modifier) {
@@ -138,12 +157,24 @@ fun GreetingImage(message: String, from: String, onComposeArticleClick: () -> Un
         .fillMaxSize()
         .padding(8.dp)
     )
-    TextButton(
-      onClick = onComposeArticleClick,
-      modifier = Modifier.align(Alignment.BottomCenter)
+    Row(
+      modifier = Modifier
+        .fillMaxWidth()
+        .align(Alignment.BottomCenter),
+      horizontalArrangement = Arrangement.Center,
     ) {
-      Text("Go to Compose Article")
+      TextButton(
+        onClick = onLastAppClick
+      ) {
+        Text("Go to Last App")
+      }
+      TextButton(
+        onClick = onComposeArticleClick,
+      ) {
+        Text("Go to Compose Article")
+      }
     }
+
   }
 }
 
@@ -151,6 +182,6 @@ fun GreetingImage(message: String, from: String, onComposeArticleClick: () -> Un
 @Composable
 fun GreetingPreview() {
   FirstAppTheme {
-    GreetingImage(stringResource(R.string.welcome_message_to_joshua), from = stringResource(R.string.signature_text), onComposeArticleClick = {})
+    GreetingImage(stringResource(R.string.welcome_message_to_joshua), from = stringResource(R.string.signature_text), onComposeArticleClick = {}, onLastAppClick = {})
   }
 }

@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun LemonadeApp(
   onBackClick: () -> Unit,
+  onForwardClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
 
@@ -137,6 +138,13 @@ fun LemonadeApp(
           text = "Back to Text Drawer"
         )
       }
+        TextButton(
+          onClick = onForwardClick
+        ) {
+          Text(
+            text = "To Tip Calculator"
+          )
+        }
       }
 
 

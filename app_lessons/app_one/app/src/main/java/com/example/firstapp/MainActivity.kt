@@ -108,6 +108,15 @@ class MainActivity : ComponentActivity() {
             "lemonade_app" -> LemonadeApp(
               onBackClick = {
                 currentScreen = "text_drawer"
+              },
+              onForwardClick = {
+                currentScreen = "tip_calculator"
+              }
+            )
+
+            "tip_calculator" -> TipCalculator(
+              onBackClick = {
+                currentScreen = "lemonade_app"
               }
             )
           }

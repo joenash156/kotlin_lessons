@@ -15,4 +15,6 @@
     <string name="lemon_drink_description">Lemon drink</string>
     <string name="lemon_empty_glass">Tap the empty glass to start again</string>
     <string name="empty_glass_content_description">Empty glass</string>
+    <string name="calculate_tip">Calculate Tip</string>
+    <string name="tip_amount">Tip Amount: %s</string>
 </resources>

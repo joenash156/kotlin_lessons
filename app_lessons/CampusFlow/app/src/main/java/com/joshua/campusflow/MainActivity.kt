@@ -227,8 +227,8 @@ fun Overview(name: String, counts: Int, modifier: Modifier = Modifier) {
 @Composable
 fun CourseCard(
   course: Course,
+  onClick: () -> Unit,
   modifier: Modifier = Modifier,
-  onClick: () -> Unit
 ) {
   Card(
     modifier = modifier
@@ -253,15 +253,13 @@ fun CourseCard(
             text = course.name,
             style = MaterialTheme.typography.titleMedium
           )
-          Row(
-            modifier = Modifier
-          ) {
-            Text(
-              text = "${course.code} • ${course.credits} credits",
-              style = MaterialTheme.typography.bodyMedium,
-              color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-          }
+
+          Text(
+            text = "${course.code} • ${course.credits} credits",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+          )
+
           Text(
             text = course.major,
             style = MaterialTheme.typography.labelSmall

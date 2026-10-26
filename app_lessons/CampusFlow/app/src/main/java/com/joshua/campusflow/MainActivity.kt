@@ -14,6 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -30,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.joshua.campusflow.model.Course
 import com.joshua.campusflow.ui.theme.CampusFlowTheme
 import java.time.LocalTime
 
@@ -74,6 +78,46 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 fun DashboardScreen(
   modifier: Modifier = Modifier
 ) {
+
+  val courses = listOf<Course>(
+    Course(
+      id = 1,
+      name = "Algorithm Design and Analysis",
+      code = "CS321",
+      credits = 4,
+    ),
+    Course(
+      id = 2,
+      name = "Web Technologies",
+      code = "CS411",
+      credits = 4
+    ),
+    Course(
+      id = 3,
+      name = "Intermediate Computer Programming",
+      code = "CS311",
+      credits = 4
+    ),
+    Course(
+      id = 4,
+      name = "Hardware and Systems fundamentals",
+      code = "CS330",
+      credits = 2
+    ),
+    Course(
+      id = 5,
+      name = "Modern Dance Traditions of Ghana",
+      code = "SOAN242",
+      credits = 4
+    ),
+    Course(
+      id = 6,
+      name = "Leadership Seminar III",
+      code = "SOAN242",
+      credits = 2
+    )
+  )
+
   Column(
     modifier = modifier
       .fillMaxSize()
@@ -90,6 +134,7 @@ fun DashboardScreen(
     )
 
     // TODO 3: Create a Card
+    // card
     Card(
       modifier = Modifier
         .fillMaxWidth()
@@ -121,7 +166,7 @@ fun DashboardScreen(
         ) {
           Overview(
             name = "Courses",
-            counts = 6
+            counts = courses.size
           )
           Overview(
             name = "Tasks due",
@@ -130,6 +175,21 @@ fun DashboardScreen(
         }
       }
     }
+
+    // courses
+    Column(
+      modifier = Modifier
+        .padding(top = 12.dp)
+    ) {
+      Text(
+        text = "My Courses",
+        fontSize = 22.sp,
+        fontWeight = FontWeight.SemiBold
+      )
+      Spacer(modifier = Modifier.height(6.dp))
+      CourseList(courses)
+    }
+
   }
 }
 
@@ -148,6 +208,68 @@ fun Overview(name: String, counts: Int, modifier: Modifier = Modifier) {
   }
 }
 
+@Composable
+fun CourseCard(
+  course: Course,
+  modifier: Modifier = Modifier
+) {
+  Card(
+    modifier = modifier
+      .fillMaxWidth(),
+    shape = RoundedCornerShape(8.dp),
+    colors = CardDefaults.cardColors(
+      containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+      contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+    )
+  ) {
+    Column(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(8.dp)
+    ) {
+      Text(
+        text = course.name,
+        fontWeight = FontWeight.Medium,
+        fontSize = 19.sp
+      )
+      Row(
+        modifier = Modifier
+          .fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+      ) {
+        Text(
+          text = "Code: ${course.code}",
+          fontSize = 15.sp
+        )
+        Text(
+          text = "Credits: ${course.credits}"
+        )
+      }
+      Text(
+        text = course.major,
+        fontSize = 13.sp
+      )
+    }
+  }
+}
+
+@Composable
+fun CourseList(
+  courses: List<Course>,
+  modifier: Modifier = Modifier
+) {
+  LazyColumn(
+    modifier = modifier,
+    verticalArrangement = Arrangement.spacedBy(8.dp)
+  ) {
+    items(
+      items = courses,
+      key = { course -> course.id }
+    ) { course ->
+      CourseCard(course)
+    }
+  }
+}
 
 @Preview(showBackground = true)
 @Composable

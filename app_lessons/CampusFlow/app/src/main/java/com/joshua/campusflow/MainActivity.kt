@@ -1,6 +1,7 @@
 package com.joshua.campusflow
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -12,27 +13,23 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.paint
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,7 +42,9 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     enableEdgeToEdge()
     setContent {
-      CampusFlowTheme {
+      CampusFlowTheme(
+        dynamicColor = false
+      ) {
         Scaffold(
           modifier = Modifier.fillMaxSize(),
         ) { innerPadding ->
@@ -101,7 +100,7 @@ val courses = listOf(
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
-  val hour = LocalTime.now().hour;
+  val hour = LocalTime.now().hour
 
   val day: String = when (hour) {
     in 0..<5 -> "night"
@@ -150,8 +149,8 @@ fun DashboardScreen(
           .fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
-          containerColor = MaterialTheme.colorScheme.secondaryContainer,
-          contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+          containerColor = MaterialTheme.colorScheme.primaryContainer,
+          contentColor = MaterialTheme.colorScheme.onPrimaryContainer
         )
       ) {
         Column(
@@ -199,7 +198,12 @@ fun DashboardScreen(
       items = courses,
       key = { course -> course.id }
     ) { course ->
-      CourseCard(course)
+      CourseCard(
+        course,
+        onClick = {
+          Log.d("CampusFlow", "Course ${course.id} selected!")
+        }
+      )
     }
 
   }
@@ -223,43 +227,54 @@ fun Overview(name: String, counts: Int, modifier: Modifier = Modifier) {
 @Composable
 fun CourseCard(
   course: Course,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
+  onClick: () -> Unit
 ) {
   Card(
     modifier = modifier
       .fillMaxWidth(),
-    shape = RoundedCornerShape(8.dp),
+    shape = RoundedCornerShape(16.dp),
     colors = CardDefaults.cardColors(
-      containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-      contentColor = MaterialTheme.colorScheme.onTertiaryContainer
-    )
+      containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+    ),
+    onClick = onClick
   ) {
-    Column(
+    Row(
       modifier = Modifier
         .fillMaxWidth()
-        .padding(8.dp)
+        .padding(16.dp),
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically
     ) {
-      Text(
-        text = course.name,
-        style = MaterialTheme.typography.titleMedium
-      )
-      Row(
-        modifier = Modifier
-          .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-      ) {
-        Text(
-          text = "Code: ${course.code}",
-          fontSize = 15.sp
+        Column(
+          modifier = Modifier.weight(1f)
+        ) {
+          Text(
+            text = course.name,
+            style = MaterialTheme.typography.titleMedium
+          )
+          Row(
+            modifier = Modifier
+          ) {
+            Text(
+              text = "${course.code} • ${course.credits} credits",
+              style = MaterialTheme.typography.bodyMedium,
+              color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+          }
+          Text(
+            text = course.major,
+            style = MaterialTheme.typography.labelSmall
+          )
+        }
+
+        Icon(
+          imageVector = Icons.Default.ChevronRight,
+          contentDescription = null,
+          modifier = Modifier.size(32.dp),
+          tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Text(
-          text = "Credits: ${course.credits}"
-        )
-      }
-      Text(
-        text = course.major,
-        fontSize = 13.sp
-      )
+
     }
   }
 }

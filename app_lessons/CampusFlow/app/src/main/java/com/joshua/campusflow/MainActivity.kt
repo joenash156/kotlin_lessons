@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -28,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,6 +50,7 @@ class MainActivity : ComponentActivity() {
           modifier = Modifier.fillMaxSize(),
         ) { innerPadding ->
           DashboardScreen(
+            courses = courses,
             modifier = Modifier.padding(innerPadding)
           )
         }
@@ -54,6 +58,46 @@ class MainActivity : ComponentActivity() {
     }
   }
 }
+
+val courses = listOf(
+  Course(
+    id = 1,
+    name = "Algorithm Design and Analysis",
+    code = "CS321",
+    credits = 4,
+  ),
+  Course(
+    id = 2,
+    name = "Web Technologies",
+    code = "CS411",
+    credits = 4
+  ),
+  Course(
+    id = 3,
+    name = "Intermediate Computer Programming",
+    code = "CS311",
+    credits = 4
+  ),
+  Course(
+    id = 4,
+    name = "Hardware and Systems fundamentals",
+    code = "CS330",
+    credits = 2
+  ),
+  Course(
+    id = 5,
+    name = "Modern Dance Traditions of Ghana",
+    code = "SOAN242",
+    credits = 4
+  ),
+  Course(
+    id = 6,
+    name = "Leadership Seminar III",
+    code = "SOAN213",
+    credits = 2
+  )
+)
+
 
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
@@ -76,118 +120,86 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 
 @Composable
 fun DashboardScreen(
+  courses: List<Course>,
   modifier: Modifier = Modifier
 ) {
 
-  val courses = listOf<Course>(
-    Course(
-      id = 1,
-      name = "Algorithm Design and Analysis",
-      code = "CS321",
-      credits = 4,
-    ),
-    Course(
-      id = 2,
-      name = "Web Technologies",
-      code = "CS411",
-      credits = 4
-    ),
-    Course(
-      id = 3,
-      name = "Intermediate Computer Programming",
-      code = "CS311",
-      credits = 4
-    ),
-    Course(
-      id = 4,
-      name = "Hardware and Systems fundamentals",
-      code = "CS330",
-      credits = 2
-    ),
-    Course(
-      id = 5,
-      name = "Modern Dance Traditions of Ghana",
-      code = "SOAN242",
-      credits = 4
-    ),
-    Course(
-      id = 6,
-      name = "Leadership Seminar III",
-      code = "SOAN242",
-      credits = 2
-    )
-  )
-
-  Column(
+  LazyColumn(
     modifier = modifier
-      .fillMaxSize()
-      .padding(12.dp)
+      .fillMaxSize(),
+    contentPadding = PaddingValues(12.dp),
+    verticalArrangement = Arrangement.spacedBy(12.dp)
   ) {
-    // TODO 1: Display the greeting
-    Greeting(name = "Joshua")
 
-    Spacer(modifier = Modifier.height(8.dp))
-
-    // TODO 2: Display the subtitle
-    Text(
-      text = "Here's what's happening today."
-    )
-
-    // TODO 3: Create a Card
-    // card
-    Card(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 4.dp),
-      shape = RoundedCornerShape(8.dp),
-      colors = CardDefaults.cardColors(
-        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-      )
-    ) {
+    // greeting
+    item {
       Column(
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(12.dp)
+        verticalArrangement = Arrangement.spacedBy(6.dp)
       ) {
-        // TODO 4: Inside the Card, display
+        Greeting(name = "Joshua")
         Text(
-          text = "Today's Overview",
-          fontSize = 18.sp,
-          fontWeight = FontWeight.Medium
+          text = "Here's what's happening today."
         )
+      }
+    }
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Row(
+    // overview card
+    item {
+      Card(
+        modifier = Modifier
+          .fillMaxWidth(),
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(
+          containerColor = MaterialTheme.colorScheme.secondaryContainer,
+          contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+        )
+      ) {
+        Column(
           modifier = Modifier
-            .fillMaxWidth(),
-          horizontalArrangement = Arrangement.SpaceBetween
+            .fillMaxWidth()
+            .padding(12.dp)
         ) {
-          Overview(
-            name = "Courses",
-            counts = courses.size
+
+          Text(
+            text = "Today's Overview",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Medium
           )
-          Overview(
-            name = "Tasks due",
-            counts = 3
-          )
+
+          Spacer(modifier = Modifier.height(12.dp))
+
+          Row(
+            modifier = Modifier
+              .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+          ) {
+            Overview(
+              name = "Courses",
+              counts = courses.size
+            )
+            Overview(
+              name = "Tasks due",
+              counts = 3
+            )
+          }
         }
       }
     }
 
     // courses
-    Column(
-      modifier = Modifier
-        .padding(top = 12.dp)
-    ) {
+    item {
       Text(
         text = "My Courses",
         fontSize = 22.sp,
         fontWeight = FontWeight.SemiBold
       )
-      Spacer(modifier = Modifier.height(6.dp))
-      CourseList(courses)
+    }
+
+    items(
+      items = courses,
+      key = { course -> course.id }
+    ) { course ->
+      CourseCard(course)
     }
 
   }
@@ -229,8 +241,7 @@ fun CourseCard(
     ) {
       Text(
         text = course.name,
-        fontWeight = FontWeight.Medium,
-        fontSize = 19.sp
+        style = MaterialTheme.typography.titleMedium
       )
       Row(
         modifier = Modifier
@@ -253,23 +264,6 @@ fun CourseCard(
   }
 }
 
-@Composable
-fun CourseList(
-  courses: List<Course>,
-  modifier: Modifier = Modifier
-) {
-  LazyColumn(
-    modifier = modifier,
-    verticalArrangement = Arrangement.spacedBy(8.dp)
-  ) {
-    items(
-      items = courses,
-      key = { course -> course.id }
-    ) { course ->
-      CourseCard(course)
-    }
-  }
-}
 
 @Preview(showBackground = true)
 @Composable

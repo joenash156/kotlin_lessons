@@ -1,6 +1,8 @@
 package com.joshua.campusflow.ui.screens
 
 import android.R.attr.onClick
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -43,6 +45,8 @@ import com.joshua.campusflow.ui.theme.CampusFlowTheme
 @Composable
 fun CourseDetailsScreen(
   course: Course,
+  sharedTransitionScope: SharedTransitionScope,
+  animatedVisibilityScope: AnimatedVisibilityScope,
   onBackClick: () -> Unit,
   modifier: Modifier = Modifier
 ) {
@@ -61,8 +65,20 @@ fun CourseDetailsScreen(
       )
       Text(
         text = course.name,
-        style = MaterialTheme.typography.titleLarge,
+        style = MaterialTheme.typography.titleMedium
       )
+//      with(sharedTransitionScope) {
+//        Text(
+//          text = course.name,
+//          style = MaterialTheme.typography.titleMedium,
+//          modifier = Modifier.sharedElement(
+//            sharedContentState = rememberSharedContentState(
+//              key = "course-title-${course.id}"
+//            ),
+//            animatedVisibilityScope = animatedVisibilityScope
+//          )
+//        )
+//      }
       Text(
         text = course.major
       )
@@ -129,7 +145,7 @@ fun Header(
     verticalAlignment = Alignment.CenterVertically
   ) {
     IconButton(
-      onClick = onBackClick
+      onClick = onBackClick,
     ) {
       Icon(
         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -140,7 +156,7 @@ fun Header(
     Text(
       text = "Details",
       style = MaterialTheme.typography.titleLarge,
-      fontWeight = FontWeight.Medium
+      fontWeight = FontWeight.SemiBold
     )
   }
 }

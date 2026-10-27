@@ -5,6 +5,11 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,8 +32,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,6 +45,9 @@ import com.joshua.campusflow.model.Course
 import com.joshua.campusflow.navigation.CampusFlowNavigation
 import com.joshua.campusflow.ui.theme.CampusFlowTheme
 import java.time.LocalTime
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.AnimatedVisibilityScope
+
 
 
 class MainActivity : ComponentActivity() {
@@ -124,7 +135,9 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 fun DashboardScreen(
   courses: List<Course>,
   onCourseClick: (Int) -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
+  sharedTransitionScope: SharedTransitionScope,
+  animatedVisibilityScope: AnimatedVisibilityScope
 ) {
 
   LazyColumn(
@@ -204,6 +217,8 @@ fun DashboardScreen(
     ) { course ->
       CourseCard(
         course,
+        sharedTransitionScope = sharedTransitionScope,
+        animatedVisibilityScope = animatedVisibilityScope,
         onClick = {
           onCourseClick(course.id)
           // Log.d("CampusFlow", "Course ${course.id} selected!")
@@ -232,12 +247,35 @@ fun Overview(name: String, counts: Int, modifier: Modifier = Modifier) {
 @Composable
 fun CourseCard(
   course: Course,
+  sharedTransitionScope: SharedTransitionScope,
+  animatedVisibilityScope: AnimatedVisibilityScope,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
+
+  val interactionSource = remember {
+    MutableInteractionSource()
+  }
+
+  val isPressed by interactionSource.collectIsPressedAsState()
+
+  val scale by animateFloatAsState(
+    targetValue = if(isPressed) 0.97f else 1f,
+    animationSpec = spring(
+      dampingRatio = Spring.DampingRatioMediumBouncy,
+      stiffness = Spring.StiffnessMedium
+    ),
+    label = "Course card scale"
+  )
+
   Card(
     modifier = modifier
-      .fillMaxWidth(),
+      .fillMaxWidth()
+      .graphicsLayer(
+        scaleX = scale,
+        scaleY = scale
+      ),
+    interactionSource = interactionSource,
     shape = RoundedCornerShape(16.dp),
     colors = CardDefaults.cardColors(
       containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
@@ -254,6 +292,20 @@ fun CourseCard(
         Column(
           modifier = Modifier.weight(1f)
         ) {
+
+//          with(sharedTransitionScope) {
+//            Text(
+//              text = course.name,
+//              style = MaterialTheme.typography.titleMedium,
+//              modifier = Modifier.sharedElement(
+//                sharedContentState = rememberSharedContentState(
+//                  key = "course-title-${course.id}"
+//                ),
+//                animatedVisibilityScope = animatedVisibilityScope
+//              )
+//            )
+//          }
+
           Text(
             text = course.name,
             style = MaterialTheme.typography.titleMedium

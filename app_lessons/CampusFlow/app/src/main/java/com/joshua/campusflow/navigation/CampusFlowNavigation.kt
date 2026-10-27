@@ -1,5 +1,6 @@
 package com.joshua.campusflow.navigation
 
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -30,25 +31,35 @@ fun CampusFlowNavigation(
     onBack = {
       if(backStack.size > 1) backStack.removeLastOrNull()
     },
-    // 1. FORWARD TRANSITIONS (Navigating to a new screen)
     transitionSpec = {
       slideInHorizontally(
         initialOffsetX = { it },
-        animationSpec = tween(200)
-      ) + fadeIn() togetherWith slideOutHorizontally(
+        animationSpec = tween(
+          durationMillis = 250,
+          easing = FastOutSlowInEasing
+        )
+      ) togetherWith slideOutHorizontally(
         targetOffsetX = { -it },
-        animationSpec = tween(200)
-      ) + fadeOut()
+        animationSpec = tween(
+          durationMillis = 250,
+          easing = FastOutSlowInEasing
+        )
+      )
     },
-    // 2. BACKWARD TRANSITIONS (Popping off the stack)
     popTransitionSpec = {
       slideInHorizontally(
         initialOffsetX = { -it },
-        animationSpec = tween(200)
-      ) + fadeIn() togetherWith slideOutHorizontally(
+        animationSpec = tween(
+          durationMillis = 250,
+          easing  = FastOutSlowInEasing
+        )
+      ) togetherWith slideOutHorizontally(
         targetOffsetX = { it },
-        animationSpec = tween(200)
-      ) + fadeOut()
+        animationSpec = tween(
+          durationMillis = 250,
+          easing = FastOutSlowInEasing
+        )
+      )
     },
     entryProvider = entryProvider {
       entry<Dashboard> {

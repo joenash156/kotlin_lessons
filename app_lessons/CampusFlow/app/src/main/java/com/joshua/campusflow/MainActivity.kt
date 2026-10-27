@@ -206,7 +206,7 @@ fun DashboardScreen(
         course,
         onClick = {
           onCourseClick(course.id)
-          Log.d("CampusFlow", "Course ${course.id} selected!")
+          // Log.d("CampusFlow", "Course ${course.id} selected!")
         }
       )
     }

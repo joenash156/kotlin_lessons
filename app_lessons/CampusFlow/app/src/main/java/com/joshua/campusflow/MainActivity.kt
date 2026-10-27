@@ -34,8 +34,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.joshua.campusflow.model.Course
+import com.joshua.campusflow.navigation.CampusFlowNavigation
 import com.joshua.campusflow.ui.theme.CampusFlowTheme
 import java.time.LocalTime
+
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,9 +50,10 @@ class MainActivity : ComponentActivity() {
         Scaffold(
           modifier = Modifier.fillMaxSize(),
         ) { innerPadding ->
-          DashboardScreen(
+          CampusFlowNavigation(
             courses = courses,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier
+              .padding(innerPadding)
           )
         }
       }
@@ -120,6 +123,7 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 @Composable
 fun DashboardScreen(
   courses: List<Course>,
+  onCourseClick: (Int) -> Unit,
   modifier: Modifier = Modifier
 ) {
 
@@ -201,6 +205,7 @@ fun DashboardScreen(
       CourseCard(
         course,
         onClick = {
+          onCourseClick(course.id)
           Log.d("CampusFlow", "Course ${course.id} selected!")
         }
       )

@@ -47,7 +47,13 @@ import com.joshua.campusflow.ui.theme.CampusFlowTheme
 import java.time.LocalTime
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.AnimatedVisibilityScope
-
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.scrollBy
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.input.pointer.PointerType
+import androidx.compose.ui.input.pointer.pointerInput
+import kotlinx.coroutines.launch
 
 
 class MainActivity : ComponentActivity() {
@@ -140,9 +146,25 @@ fun DashboardScreen(
   animatedVisibilityScope: AnimatedVisibilityScope
 ) {
 
+  val listState = rememberLazyListState()
+  val coroutineScope = rememberCoroutineScope()
+
   LazyColumn(
+    state = listState,
     modifier = modifier
-      .fillMaxSize(),
+      .fillMaxSize()
+      .pointerInput(Unit) {
+        detectDragGestures(
+          onDrag = { change, dragAmount ->
+            if (change.type == PointerType.Mouse) {
+              change.consume()
+              coroutineScope.launch {
+                listState.scrollBy(-dragAmount.y)
+              }
+            }
+          }
+        )
+      },
     contentPadding = PaddingValues(12.dp),
     verticalArrangement = Arrangement.spacedBy(12.dp)
   ) {

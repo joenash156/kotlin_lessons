@@ -13,14 +13,17 @@ import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
-import com.joshua.campusflow.DashboardScreen
 import com.joshua.campusflow.model.Course
 import com.joshua.campusflow.ui.screens.CourseDetailsScreen
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import com.joshua.campusflow.DashboardScreen
 import com.joshua.campusflow.ui.components.CampusFlowBottomBar
+import com.joshua.campusflow.ui.screens.CoursesScreen
+import com.joshua.campusflow.ui.screens.ProfileScreen
+import com.joshua.campusflow.ui.screens.TasksScreen
 
 
 @Composable
@@ -29,22 +32,11 @@ fun CampusFlowNavigation(
   modifier: Modifier = Modifier
 ) {
   // TODO 1: Create the back stack starting with the Dashboard
-  val backStack = rememberNavBackStack(Dashboard)
+  val backStack = rememberNavBackStack(MainTabs)
 
-  Scaffold(
-    modifier = modifier,
-    bottomBar = {
-      CampusFlowBottomBar(
-        selectedRoute = Dashboard,
-        onTabSelected = {}
-      )
-    }
-  ) { innerPadding ->
-
-      SharedTransitionLayout {
+  SharedTransitionLayout {
       NavDisplay(
-        modifier = Modifier
-          .padding(innerPadding),
+        modifier = modifier,
         backStack = backStack,
         onBack = {
           if(backStack.size > 1) backStack.removeLastOrNull()
@@ -80,6 +72,19 @@ fun CampusFlowNavigation(
           )
         },
         entryProvider = entryProvider {
+          entry<MainTabs> {
+            MainTabsScreen(
+              courses = courses,
+              sharedTransitionScope = this@SharedTransitionLayout,
+              animatedVisibilityScope = LocalNavAnimatedContentScope.current,
+              onCourseClick = { courseId ->
+                backStack.add(
+                  CourseDetails(courseId = courseId)
+                )
+              }
+            )
+          }
+
           entry<Dashboard> {
             DashboardScreen(
               courses,
@@ -111,11 +116,21 @@ fun CampusFlowNavigation(
               Text("Course not found!")
             }
           }
+
+          entry<CoursesRoute> {
+            CoursesScreen()
+          }
+
+          entry<TasksRoute> {
+            TasksScreen()
+          }
+
+          entry<ProfileRoute> {
+            ProfileScreen()
+          }
         }
       )
     }
-  }
-
 
 }
 

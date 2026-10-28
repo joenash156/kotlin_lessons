@@ -49,7 +49,9 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.scrollBy
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.input.pointer.PointerType
 import androidx.compose.ui.input.pointer.pointerInput
@@ -64,10 +66,17 @@ class MainActivity : ComponentActivity() {
       CampusFlowTheme(
         dynamicColor = false
       ) {
-        CampusFlowNavigation(
-          courses = courses,
-          modifier = Modifier.fillMaxSize()
-        )
+        Surface(
+          modifier = Modifier.fillMaxSize(),
+          color = MaterialTheme.colorScheme.background
+        ) {
+          CampusFlowNavigation(
+            courses = courses,
+            modifier = Modifier
+              .fillMaxSize()
+              .safeDrawingPadding()
+          )
+        }
       }
     }
   }

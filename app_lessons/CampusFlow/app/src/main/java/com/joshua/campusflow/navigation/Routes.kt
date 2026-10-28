@@ -13,3 +13,12 @@ data object Dashboard: NavKey
 data class CourseDetails(
   val courseId: Int
 ): NavKey
+
+@Serializable
+data object CoursesRoute: NavKey
+
+@Serializable
+data object TasksRoute: NavKey
+
+@Serializable
+data object ProfileRoute: NavKey

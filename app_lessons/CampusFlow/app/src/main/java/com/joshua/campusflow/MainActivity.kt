@@ -64,15 +64,10 @@ class MainActivity : ComponentActivity() {
       CampusFlowTheme(
         dynamicColor = false
       ) {
-        Scaffold(
-          modifier = Modifier.fillMaxSize(),
-        ) { innerPadding ->
-          CampusFlowNavigation(
-            courses = courses,
-            modifier = Modifier
-              .padding(innerPadding)
-          )
-        }
+        CampusFlowNavigation(
+          courses = courses,
+          modifier = Modifier.fillMaxSize()
+        )
       }
     }
   }

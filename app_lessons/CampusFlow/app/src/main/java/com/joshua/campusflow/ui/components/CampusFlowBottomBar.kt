@@ -1,12 +1,5 @@
 package com.joshua.campusflow.ui.components
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.MenuBook
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.outlined.DoneAll
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.MenuBook
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -14,17 +7,26 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.navigation3.runtime.NavKey
 import com.joshua.campusflow.R
+import com.joshua.campusflow.navigation.CoursesRoute
+import com.joshua.campusflow.navigation.Dashboard
+import com.joshua.campusflow.navigation.ProfileRoute
+import com.joshua.campusflow.navigation.TasksRoute
 
 @Composable
 fun CampusFlowBottomBar(
+  selectedRoute: NavKey,
+  onTabSelected: (NavKey) -> Unit,
   modifier: Modifier = Modifier
 ) {
   // TODO: Implement the navigation bar
   NavigationBar(modifier) {
     NavigationBarItem(
-      selected = true,
-      onClick = {},
+      selected = selectedRoute == Dashboard,
+      onClick = {
+        onTabSelected(Dashboard)
+      },
       icon = {
         Icon(
           painter = painterResource(R.drawable.ic_home),
@@ -38,8 +40,10 @@ fun CampusFlowBottomBar(
       }
     )
     NavigationBarItem(
-      selected = true,
-      onClick = {},
+      selected = selectedRoute == CoursesRoute,
+      onClick = {
+        onTabSelected(CoursesRoute)
+      },
       icon = {
         Icon(
           painter = painterResource(R.drawable.ic_book_open),
@@ -53,8 +57,10 @@ fun CampusFlowBottomBar(
       }
     )
     NavigationBarItem(
-      selected = true,
-      onClick = {},
+      selected = selectedRoute == TasksRoute,
+      onClick = {
+        onTabSelected(TasksRoute)
+      },
       icon = {
         Icon(
           painter = painterResource(R.drawable.ic_check_check),
@@ -68,8 +74,10 @@ fun CampusFlowBottomBar(
       }
     )
     NavigationBarItem(
-      selected = true,
-      onClick = {},
+      selected = selectedRoute == ProfileRoute,
+      onClick = {
+        onTabSelected(ProfileRoute)
+      },
       icon = {
         Icon(
           painter = painterResource(R.drawable.ic_user_round),

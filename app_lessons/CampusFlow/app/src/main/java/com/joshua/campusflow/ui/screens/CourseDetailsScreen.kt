@@ -17,8 +17,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.filled.Assignment
+import androidx.compose.material.icons.automirrored.filled.Grading
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForwardIos
+import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.West
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -26,6 +31,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -33,7 +39,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -48,6 +56,7 @@ fun CourseDetailsScreen(
   sharedTransitionScope: SharedTransitionScope,
   animatedVisibilityScope: AnimatedVisibilityScope,
   onBackClick: () -> Unit,
+  onAssignmentsClick: () -> Unit,
   modifier: Modifier = Modifier
 ) {
   Column(
@@ -55,7 +64,10 @@ fun CourseDetailsScreen(
       .fillMaxSize()
   ) {
     // header
-    Header(onBackClick)
+    Header(
+      title = "Course Details",
+      onBackClick = onBackClick
+    )
     Column(
       modifier = Modifier
         .padding(horizontal = 12.dp)
@@ -109,8 +121,60 @@ fun CourseDetailsScreen(
           )
         }
       }
+
+      Column(
+        modifier = Modifier
+          .clip(RoundedCornerShape(16.dp))
+      ) {
+        LinkRow(
+          title = "Assignments",
+          icon = Icons.AutoMirrored.Filled.Assignment,
+          onLinkClick = onAssignmentsClick
+        )
+        LinkRow(
+          title = "Grades",
+          icon = Icons.AutoMirrored.Filled.Grading,
+          onLinkClick = {}
+        )
+      }
+
     }
   }
+}
+
+
+@Composable
+fun LinkRow(
+  title: String,
+  icon: ImageVector,
+  onLinkClick: () -> Unit,
+  modifier: Modifier = Modifier
+) {
+  ListItem(
+    modifier = modifier
+      .clickable {
+        onLinkClick()
+      },
+    headlineContent = {
+      Text(
+        text = title
+      )
+    },
+    leadingContent = {
+      Icon(
+        imageVector = icon,
+        contentDescription = null
+      )
+    },
+    trailingContent = {
+      Icon(
+        imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+        contentDescription = "Navigate",
+        modifier = Modifier
+          .size(16.dp)
+      )
+    }
+  )
 }
 
 @Composable
@@ -136,6 +200,7 @@ fun Overview(
 
 @Composable
 fun Header(
+  title: String,
   onBackClick: () -> Unit
 ) {
   Row(
@@ -154,7 +219,7 @@ fun Header(
       )
     }
     Text(
-      text = "Details",
+      text = title,
       style = MaterialTheme.typography.titleLarge,
       fontWeight = FontWeight.SemiBold
     )

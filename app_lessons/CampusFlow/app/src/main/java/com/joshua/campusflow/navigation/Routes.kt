@@ -24,3 +24,8 @@ data object ProfileRoute: NavKey
 
 @Serializable
 data object MainTabs : NavKey
+
+@Serializable
+data class CourseAssignments(
+  val courseId: Int
+) : NavKey

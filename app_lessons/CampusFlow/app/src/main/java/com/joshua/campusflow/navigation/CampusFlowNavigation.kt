@@ -21,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.joshua.campusflow.DashboardScreen
 import com.joshua.campusflow.ui.components.CampusFlowBottomBar
+import com.joshua.campusflow.ui.screens.CourseAssignmentsScreen
 import com.joshua.campusflow.ui.screens.CoursesScreen
 import com.joshua.campusflow.ui.screens.ProfileScreen
 import com.joshua.campusflow.ui.screens.TasksScreen
@@ -31,7 +32,6 @@ fun CampusFlowNavigation(
   courses: List<Course>,
   modifier: Modifier = Modifier
 ) {
-  // TODO 1: Create the back stack starting with the Dashboard
   val backStack = rememberNavBackStack(MainTabs)
 
   SharedTransitionLayout {
@@ -45,13 +45,13 @@ fun CampusFlowNavigation(
           slideInHorizontally(
             initialOffsetX = { it },
             animationSpec = tween(
-              durationMillis = 250,
+              durationMillis = 150,
               easing = FastOutSlowInEasing
             )
           ) togetherWith slideOutHorizontally(
             targetOffsetX = { -it },
             animationSpec = tween(
-              durationMillis = 250,
+              durationMillis = 150,
               easing = FastOutSlowInEasing
             )
           )
@@ -60,13 +60,13 @@ fun CampusFlowNavigation(
           slideInHorizontally(
             initialOffsetX = { -it },
             animationSpec = tween(
-              durationMillis = 250,
+              durationMillis = 200,
               easing  = FastOutSlowInEasing
             )
           ) togetherWith slideOutHorizontally(
             targetOffsetX = { it },
             animationSpec = tween(
-              durationMillis = 250,
+              durationMillis = 200,
               easing = FastOutSlowInEasing
             )
           )
@@ -85,18 +85,18 @@ fun CampusFlowNavigation(
             )
           }
 
-          entry<Dashboard> {
-            DashboardScreen(
-              courses,
-              sharedTransitionScope = this@SharedTransitionLayout,
-              animatedVisibilityScope = LocalNavAnimatedContentScope.current,
-              onCourseClick = {
-                backStack.add(
-                  CourseDetails(courseId = it)
-                )
-              },
-            )
-          }
+//          entry<Dashboard> {
+//            DashboardScreen(
+//              courses,
+//              sharedTransitionScope = this@SharedTransitionLayout,
+//              animatedVisibilityScope = LocalNavAnimatedContentScope.current,
+//              onCourseClick = {
+//                backStack.add(
+//                  CourseDetails(courseId = it)
+//                )
+//              },
+//            )
+//          }
 
           entry<CourseDetails> { route ->
             val selectedCourse = courses.firstOrNull {
@@ -110,6 +110,11 @@ fun CampusFlowNavigation(
                 animatedVisibilityScope = LocalNavAnimatedContentScope.current,
                 onBackClick = {
                   if(backStack.size > 1) backStack.removeLastOrNull()
+                },
+                onAssignmentsClick = {
+                  backStack.add(
+                    CourseAssignments(courseId = route.courseId)
+                  )
                 }
               )
             } else {
@@ -127,6 +132,19 @@ fun CampusFlowNavigation(
 
           entry<ProfileRoute> {
             ProfileScreen()
+          }
+
+          entry<CourseAssignments> { route ->
+            CourseAssignmentsScreen(
+              courseId = route.courseId,
+              onBackClick = {
+                if(backStack.size > 1) backStack.removeLastOrNull()
+              },
+              onAssignmentClick = { assignmentId ->
+                // We'll implement assignment details navigation
+                // when that destination is created.
+              }
+            )
           }
         }
       )

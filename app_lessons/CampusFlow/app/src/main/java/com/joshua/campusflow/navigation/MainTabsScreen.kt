@@ -11,16 +11,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.rememberNavBackStack
 import com.joshua.campusflow.DashboardScreen
 import com.joshua.campusflow.model.Course
 import com.joshua.campusflow.ui.components.CampusFlowBottomBar
 import com.joshua.campusflow.ui.screens.CoursesScreen
 import com.joshua.campusflow.ui.screens.ProfileScreen
 import com.joshua.campusflow.ui.screens.TasksScreen
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 
 @Composable
 fun MainTabsScreen(
@@ -31,15 +34,26 @@ fun MainTabsScreen(
   modifier: Modifier = Modifier
 ) {
 
-  var selectedTab by remember { mutableStateOf<NavKey>(Dashboard) }
+  var selectedTab by rememberSaveable { mutableStateOf("home") }
+  val stateHolder = rememberSaveableStateHolder()
 
   Scaffold(
     modifier = modifier,
     bottomBar = {
       CampusFlowBottomBar(
-        selectedRoute = selectedTab,
-        onTabSelected = {
-          selectedTab = it
+        selectedRoute = when (selectedTab) {
+          "courses" -> CoursesRoute
+          "tasks" -> TasksRoute
+          "profile" -> ProfileRoute
+          else -> Dashboard
+        },
+        onTabSelected = { route ->
+          selectedTab = when (route) {
+            CoursesRoute -> "courses"
+            TasksRoute -> "tasks"
+            ProfileRoute -> "profile"
+            else -> "home"
+          }
         }
       )
     }
@@ -50,17 +64,19 @@ fun MainTabsScreen(
         .padding(innerPadding),
       contentAlignment = Alignment.Center
     ) {
-      when (selectedTab) {
-        Dashboard ->  DashboardScreen(
-          courses = courses,
-          onCourseClick = onCourseClick,
-          sharedTransitionScope = sharedTransitionScope,
-          animatedVisibilityScope = animatedVisibilityScope
-        )
-        CoursesRoute -> CoursesScreen()
-        TasksRoute -> TasksScreen()
-        ProfileRoute -> ProfileScreen()
-        else -> Text("Unknown destination")
+      stateHolder.SaveableStateProvider(selectedTab) {
+        when (selectedTab) {
+          "home" -> DashboardScreen(
+            courses = courses,
+            onCourseClick = onCourseClick,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedVisibilityScope = animatedVisibilityScope
+          )
+          "courses" -> CoursesScreen()
+          "tasks" -> TasksScreen()
+          "profile" -> ProfileScreen()
+          else -> Text("Unknown destination")
+        }
       }
     }
   }

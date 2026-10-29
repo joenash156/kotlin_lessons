@@ -29,3 +29,8 @@ data object MainTabs : NavKey
 data class CourseAssignments(
   val courseId: Int
 ) : NavKey
+
+@Serializable
+data class AssignmentDetails(
+  val assignmentId: Int
+) : NavKey

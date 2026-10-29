@@ -18,13 +18,23 @@ import com.joshua.campusflow.ui.screens.CourseDetailsScreen
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.joshua.campusflow.DashboardScreen
+import com.joshua.campusflow.data.repository.InMemoryAssignmentRepository
 import com.joshua.campusflow.ui.components.CampusFlowBottomBar
+import com.joshua.campusflow.ui.screens.AssignmentDetailsScreen
 import com.joshua.campusflow.ui.screens.CourseAssignmentsScreen
 import com.joshua.campusflow.ui.screens.CoursesScreen
 import com.joshua.campusflow.ui.screens.ProfileScreen
 import com.joshua.campusflow.ui.screens.TasksScreen
+import com.joshua.campusflow.ui.screens.assignments.AssignmentDetailsViewModel
+import com.joshua.campusflow.ui.screens.assignments.AssignmentsViewModel
 
 
 @Composable
@@ -33,6 +43,7 @@ fun CampusFlowNavigation(
   modifier: Modifier = Modifier
 ) {
   val backStack = rememberNavBackStack(MainTabs)
+  val assignmentRepository = remember { InMemoryAssignmentRepository() }
 
   SharedTransitionLayout {
       NavDisplay(
@@ -41,17 +52,21 @@ fun CampusFlowNavigation(
         onBack = {
           if(backStack.size > 1) backStack.removeLastOrNull()
         },
+        entryDecorators = listOf(
+          rememberSaveableStateHolderNavEntryDecorator(),
+          rememberViewModelStoreNavEntryDecorator()
+        ),
         transitionSpec = {
           slideInHorizontally(
             initialOffsetX = { it },
             animationSpec = tween(
-              durationMillis = 200,
+              durationMillis = 300,
               easing = FastOutSlowInEasing
             )
           ) togetherWith slideOutHorizontally(
             targetOffsetX = { -it },
             animationSpec = tween(
-              durationMillis = 200,
+              durationMillis = 300,
               easing = FastOutSlowInEasing
             )
           )
@@ -60,13 +75,13 @@ fun CampusFlowNavigation(
           slideInHorizontally(
             initialOffsetX = { -it },
             animationSpec = tween(
-              durationMillis = 200,
+              durationMillis = 300,
               easing  = FastOutSlowInEasing
             )
           ) togetherWith slideOutHorizontally(
             targetOffsetX = { it },
             animationSpec = tween(
-              durationMillis = 200,
+              durationMillis = 300,
               easing = FastOutSlowInEasing
             )
           )
@@ -135,14 +150,46 @@ fun CampusFlowNavigation(
           }
 
           entry<CourseAssignments> { route ->
+
+            val assignmentsViewModel: AssignmentsViewModel = viewModel(
+              factory = AssignmentsViewModel.factory(
+                repository = assignmentRepository,
+                courseId = route.courseId
+              )
+            )
+            val uiState by assignmentsViewModel.uiState.collectAsStateWithLifecycle()
+
             CourseAssignmentsScreen(
               courseId = route.courseId,
+              uiState = uiState,
               onBackClick = {
                 if(backStack.size > 1) backStack.removeLastOrNull()
               },
               onAssignmentClick = { assignmentId ->
-                // We'll implement assignment details navigation
-                // when that destination is created.
+                backStack.add(
+                  AssignmentDetails(assignmentId = assignmentId)
+                )
+              }
+            )
+          }
+
+          entry<AssignmentDetails> { route ->
+            val detailsViewModel: AssignmentDetailsViewModel = viewModel(
+              factory = AssignmentDetailsViewModel.factory(
+                repository = assignmentRepository,
+                assignmentId = route.assignmentId
+              )
+            )
+
+            val uiState by detailsViewModel.uiState.collectAsStateWithLifecycle()
+
+            AssignmentDetailsScreen(
+              assignmentId = route.assignmentId,
+              uiState = uiState,
+              onBackClick = {
+                if (backStack.size > 1) {
+                  backStack.removeLastOrNull()
+                }
               }
             )
           }

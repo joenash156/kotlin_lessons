@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.joshua.campusflow.ui.components.CampusFlowTopAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,22 +31,9 @@ fun CourseAssignmentsScreen(
   Scaffold(
     modifier = modifier,
    topBar = {
-     TopAppBar(
-       title = {
-         Text(
-           text = "Assignments",
-           style = MaterialTheme.typography.titleLarge,
-           fontWeight = FontWeight.SemiBold
-         )
-       },
-       navigationIcon = {
-         IconButton(onClick = onBackClick) {
-           Icon(
-             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-             contentDescription = "Back"
-           )
-         }
-       }
+     CampusFlowTopAppBar(
+       title = "Assignments",
+       onBackClick = onBackClick,
      )
    }
   ) { innerPadding ->

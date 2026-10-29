@@ -58,6 +58,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.joshua.campusflow.Greeting
 import com.joshua.campusflow.model.Course
+import com.joshua.campusflow.ui.components.CampusFlowAppBarStyle
+import com.joshua.campusflow.ui.components.CampusFlowTopAppBar
 import com.joshua.campusflow.ui.theme.CampusFlowTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,22 +81,12 @@ fun CourseDetailsScreen(
       .nestedScroll(scrollBehavior.nestedScrollConnection)
     ,
     topBar = {
-      LargeTopAppBar(
-        title = {
-          Text(
-            text = "Course Details",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.SemiBold
-          )
-        },
-        navigationIcon = {
-          IconButton(onClick = onBackClick) {
-            Icon(
-              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-              contentDescription = "Back"
-            )
-          }
-        },
+      CampusFlowTopAppBar(
+        title = "Course Details",
+        onBackClick = onBackClick,
+        style = CampusFlowAppBarStyle.Large,
+        expandedHeight = 240.dp,
+        collapsedHeight = 64.dp,
         scrollBehavior = scrollBehavior
       )
     }

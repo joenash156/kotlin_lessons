@@ -5,7 +5,7 @@ import java.time.LocalDate
 
 class InMemoryAssignmentRepository : AssignmentRepository {
 
-  private val assignments = listOf(
+  private val assignments = mutableListOf(
     Assignment(
       id = 1,
       courseId = 2,

@@ -1,5 +1,7 @@
 package com.joshua.campusflow.navigation
 
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -16,6 +18,8 @@ import androidx.navigation3.ui.NavDisplay
 import com.joshua.campusflow.model.Course
 import com.joshua.campusflow.ui.screens.CourseDetailsScreen
 import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.getValue
@@ -23,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.metadata
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.joshua.campusflow.DashboardScreen
@@ -60,13 +65,13 @@ fun CampusFlowNavigation(
           slideInHorizontally(
             initialOffsetX = { it },
             animationSpec = tween(
-              durationMillis = 300,
+              durationMillis = 180,
               easing = FastOutSlowInEasing
             )
           ) togetherWith slideOutHorizontally(
             targetOffsetX = { -it },
             animationSpec = tween(
-              durationMillis = 300,
+              durationMillis = 180,
               easing = FastOutSlowInEasing
             )
           )
@@ -75,13 +80,13 @@ fun CampusFlowNavigation(
           slideInHorizontally(
             initialOffsetX = { -it },
             animationSpec = tween(
-              durationMillis = 300,
+              durationMillis = 180,
               easing  = FastOutSlowInEasing
             )
           ) togetherWith slideOutHorizontally(
             targetOffsetX = { it },
             animationSpec = tween(
-              durationMillis = 300,
+              durationMillis = 180,
               easing = FastOutSlowInEasing
             )
           )
@@ -173,7 +178,43 @@ fun CampusFlowNavigation(
             )
           }
 
-          entry<AssignmentDetails> { route ->
+          entry<AssignmentDetails>
+//          (
+//            metadata = metadata {
+//
+//              put(NavDisplay.TransitionKey) {
+//                slideInVertically(
+//                  initialOffsetY = { it },
+//                  animationSpec = tween(
+//                    durationMillis = 150,
+//                    easing = FastOutSlowInEasing
+//                  )
+//                ) togetherWith ExitTransition.KeepUntilTransitionsFinished
+//              }
+//
+//              put(NavDisplay.PopTransitionKey) {
+//                EnterTransition.None togetherWith slideOutVertically(
+//                  targetOffsetY = { it },
+//                  animationSpec = tween(
+//                    durationMillis = 150,
+//                    easing = FastOutSlowInEasing
+//                  )
+//                )
+//              }
+//
+//              put(NavDisplay.PredictivePopTransitionKey) {
+//                EnterTransition.None togetherWith slideOutVertically(
+//                  targetOffsetY = { it },
+//                  animationSpec = tween(
+//                    durationMillis = 150,
+//                    easing = FastOutSlowInEasing
+//                  )
+//                )
+//              }
+//
+//            }
+//          )
+          { route ->
             val detailsViewModel: AssignmentDetailsViewModel = viewModel(
               factory = AssignmentDetailsViewModel.factory(
                 repository = assignmentRepository,

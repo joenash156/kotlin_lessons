@@ -3,6 +3,7 @@ package com.joshua.campusflow.ui.screens
 import android.R.attr.onClick
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -42,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -68,10 +70,21 @@ fun CourseDetailsScreen(
       title = "Course Details",
       onBackClick = onBackClick
     )
+    if(course.image != null) {
+
+      Image(
+        painter = painterResource(course.image),
+        contentDescription = null,
+        modifier = Modifier
+          .fillMaxWidth()
+      )
+    }
+
     Column(
       modifier = Modifier
         .padding(horizontal = 12.dp)
     ) {
+
       Text(
         text = course.code
       )

@@ -88,24 +88,28 @@ val courses = listOf(
     name = "Algorithm Design and Analysis",
     code = "CS321",
     credits = 4,
+    image = R.drawable.algo
   ),
   Course(
     id = 2,
     name = "Web Technologies",
     code = "CS411",
-    credits = 4
+    credits = 4,
+    image = R.drawable.webtech
   ),
   Course(
     id = 3,
     name = "Intermediate Computer Programming",
     code = "CS311",
-    credits = 4
+    credits = 4,
+    image = R.drawable.inter
   ),
   Course(
     id = 4,
     name = "Hardware and Systems fundamentals",
     code = "CS330",
-    credits = 2
+    credits = 2,
+    image = R.drawable.hard
   ),
   Course(
     id = 5,

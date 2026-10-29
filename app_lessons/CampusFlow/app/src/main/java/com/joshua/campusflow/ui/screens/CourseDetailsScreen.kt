@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
@@ -29,13 +31,18 @@ import androidx.compose.material.icons.filled.West
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -43,6 +50,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,6 +60,7 @@ import com.joshua.campusflow.Greeting
 import com.joshua.campusflow.model.Course
 import com.joshua.campusflow.ui.theme.CampusFlowTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CourseDetailsScreen(
   course: Course,
@@ -61,29 +70,51 @@ fun CourseDetailsScreen(
   onAssignmentsClick: () -> Unit,
   modifier: Modifier = Modifier
 ) {
-  Column(
-    modifier = modifier
-      .fillMaxSize()
-  ) {
-    // header
-    Header(
-      title = "Course Details",
-      onBackClick = onBackClick
-    )
-    if(course.image != null) {
 
-      Image(
-        painter = painterResource(course.image),
-        contentDescription = null,
-        modifier = Modifier
-          .fillMaxWidth()
+  val scrollState = rememberScrollState()
+  val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
+  Scaffold(
+    modifier = modifier
+      .nestedScroll(scrollBehavior.nestedScrollConnection)
+    ,
+    topBar = {
+      LargeTopAppBar(
+        title = {
+          Text(
+            text = "Course Details",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.SemiBold
+          )
+        },
+        navigationIcon = {
+          IconButton(onClick = onBackClick) {
+            Icon(
+              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+              contentDescription = "Back"
+            )
+          }
+        },
+        scrollBehavior = scrollBehavior
       )
     }
-
+  ) { innerPadding ->
     Column(
       modifier = Modifier
+        .fillMaxSize()
+        .padding(innerPadding)
         .padding(horizontal = 12.dp)
+        .verticalScroll(scrollState)
     ) {
+
+      if(course.image != null) {
+        Image(
+          painter = painterResource(course.image),
+          contentDescription = null,
+          modifier = Modifier
+            .fillMaxWidth()
+        )
+      }
 
       Text(
         text = course.code
@@ -149,10 +180,46 @@ fun CourseDetailsScreen(
           icon = Icons.AutoMirrored.Filled.Grading,
           onLinkClick = {}
         )
+        LinkRow(
+          title = "Grades",
+          icon = Icons.AutoMirrored.Filled.Grading,
+          onLinkClick = {}
+        )
+        LinkRow(
+          title = "Grades",
+          icon = Icons.AutoMirrored.Filled.Grading,
+          onLinkClick = {}
+        )
+        LinkRow(
+          title = "Grades",
+          icon = Icons.AutoMirrored.Filled.Grading,
+          onLinkClick = {}
+        )
+        LinkRow(
+          title = "Grades",
+          icon = Icons.AutoMirrored.Filled.Grading,
+          onLinkClick = {}
+        )
+        LinkRow(
+          title = "Grades",
+          icon = Icons.AutoMirrored.Filled.Grading,
+          onLinkClick = {}
+        )
+        LinkRow(
+          title = "Grades",
+          icon = Icons.AutoMirrored.Filled.Grading,
+          onLinkClick = {}
+        )
+        LinkRow(
+          title = "Grades",
+          icon = Icons.AutoMirrored.Filled.Grading,
+          onLinkClick = {}
+        )
       }
-
     }
   }
+
+
 }
 
 

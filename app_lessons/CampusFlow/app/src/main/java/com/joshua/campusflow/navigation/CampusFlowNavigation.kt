@@ -45,13 +45,13 @@ fun CampusFlowNavigation(
           slideInHorizontally(
             initialOffsetX = { it },
             animationSpec = tween(
-              durationMillis = 150,
+              durationMillis = 200,
               easing = FastOutSlowInEasing
             )
           ) togetherWith slideOutHorizontally(
             targetOffsetX = { -it },
             animationSpec = tween(
-              durationMillis = 150,
+              durationMillis = 200,
               easing = FastOutSlowInEasing
             )
           )

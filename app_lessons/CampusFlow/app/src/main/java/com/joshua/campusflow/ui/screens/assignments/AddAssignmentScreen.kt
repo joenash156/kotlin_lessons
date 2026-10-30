@@ -11,14 +11,24 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,9 +37,17 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.joshua.campusflow.ui.components.CampusFlowTopAppBar
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,8 +60,22 @@ fun AddAssignmentScreen(
   val descriptionState = rememberTextFieldState()
   var hasAttemptedSave by rememberSaveable { mutableStateOf(false) }
 
+  val titleFocusRequester = remember { FocusRequester() }
+  val descriptionFocusRequester = remember { FocusRequester() }
+
   val titleHasError = hasAttemptedSave && titleState.text.isBlank()
   val descriptionHasError = hasAttemptedSave && descriptionState.text.isBlank()
+
+  var showDatePicker by rememberSaveable { mutableStateOf(false) }
+  var selectedDueDateMillis by rememberSaveable { mutableStateOf<Long?>(null) }
+  val selectedDueDate: LocalDate? = selectedDueDateMillis?.let { millis ->
+      Instant.ofEpochMilli(millis)
+        .atZone(ZoneOffset.UTC)
+        .toLocalDate()
+    }
+  val dateFormatter = remember { DateTimeFormatter.ofPattern("d MMMM yyyy") }
+  val dueDateHasError = hasAttemptedSave && selectedDueDate == null
+
 
   val interactionSource = remember { MutableInteractionSource() }
   val isPressed by interactionSource.collectIsPressedAsState()
@@ -86,13 +118,17 @@ fun AddAssignmentScreen(
           Text("e.g. HTML and CSS Lab")
         },
         lineLimits = TextFieldLineLimits.SingleLine,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
+          .focusRequester(titleFocusRequester),
         isError = titleHasError,
         supportingText = {
           if (titleHasError) {
             Text("Assignment title is required")
           }
         },
+        keyboardOptions = KeyboardOptions(
+          imeAction = ImeAction.Next
+        )
       )
 
       OutlinedTextField(
@@ -107,14 +143,37 @@ fun AddAssignmentScreen(
           minHeightInLines = 3,
           maxHeightInLines = 6
         ),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
+          .focusRequester(descriptionFocusRequester),
         isError = descriptionHasError,
         supportingText = {
           if (descriptionHasError) {
             Text("Description is required")
           }
         },
+        keyboardOptions = KeyboardOptions(
+          imeAction = ImeAction.Done
+        )
       )
+
+      OutlinedButton(
+        onClick = {
+          showDatePicker = true
+        },
+        modifier = Modifier.fillMaxWidth()
+      ) {
+        Text(
+          text = selectedDueDate?.format(dateFormatter)
+            ?: "Select Due Date"
+        )
+      }
+      if (dueDateHasError) {
+        Text(
+          text = "Please select a due date",
+          color = MaterialTheme.colorScheme.error,
+          style = MaterialTheme.typography.bodySmall
+        )
+      }
 
       Button(
         onClick = {
@@ -123,11 +182,22 @@ fun AddAssignmentScreen(
           val title = titleState.text.toString().trim()
           val description = descriptionState.text.toString().trim()
 
-          if (title.isNotBlank() && description.isNotBlank()) {
-            Log.d(
-              "CampusFlow",
-              "Title: $title\nDescription: $description"
-            )
+          when {
+            title.isBlank() -> {
+              titleFocusRequester.requestFocus()
+            }
+            description.isBlank() -> {
+              descriptionFocusRequester.requestFocus()
+            }
+            selectedDueDate == null -> {
+              showDatePicker = true
+            }
+            else -> {
+              Log.d(
+                "CampusFlow",
+                "Title: $title\nDescription: $description\nDue Date: ${selectedDueDate?.format(dateFormatter)}"
+              )
+            }
           }
         },
         interactionSource = interactionSource,
@@ -144,6 +214,41 @@ fun AddAssignmentScreen(
         )
       }
 
+    }
+  }
+
+  if (showDatePicker) {
+    val datePickerState = rememberDatePickerState(
+      initialSelectedDateMillis = selectedDueDateMillis
+    )
+
+    DatePickerDialog(
+      onDismissRequest = {
+        showDatePicker = false
+      },
+      confirmButton = {
+        TextButton(
+          onClick = {
+            selectedDueDateMillis = datePickerState.selectedDateMillis
+            showDatePicker = false
+          }
+        ) {
+          Text("OK")
+        }
+      },
+      dismissButton = {
+        TextButton(
+          onClick = {
+            showDatePicker = false
+          }
+        ) {
+          Text("Cancel")
+        }
+      }
+    ) {
+      DatePicker(
+        state = datePickerState
+      )
     }
   }
 }

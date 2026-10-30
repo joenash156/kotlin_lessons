@@ -34,3 +34,8 @@ data class CourseAssignments(
 data class AssignmentDetails(
   val assignmentId: Int
 ) : NavKey
+
+@Serializable
+data class AddAssignment(
+  val courseId: Int
+) : NavKey

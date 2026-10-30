@@ -1,6 +1,10 @@
 package com.joshua.campusflow.data.repository
 
 import com.joshua.campusflow.model.Assignment
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 
 class InMemoryAssignmentRepository : AssignmentRepository {
@@ -39,6 +43,9 @@ class InMemoryAssignmentRepository : AssignmentRepository {
     )
   )
 
+  private val _assignmentsFlow = MutableStateFlow(assignments.toList())
+  val assignmentsFlow = _assignmentsFlow.asStateFlow()
+
   override suspend fun getAssignmentsForCourse(courseId: Int): List<Assignment> {
     return assignments.filter { assignment ->
       assignment.courseId == courseId
@@ -47,6 +54,38 @@ class InMemoryAssignmentRepository : AssignmentRepository {
   override suspend fun getAssignmentById(assignmentId: Int): Assignment? {
     return assignments.firstOrNull { assignment ->
       assignment.id == assignmentId
+    }
+  }
+  override suspend fun updateAssignmentCompletion(
+    assignmentId: Int,
+    isCompleted: Boolean
+  ) {
+    val index = assignments.indexOfFirst { assignment ->
+      assignment.id == assignmentId
+    }
+
+    if (index == -1) return
+
+    val updatedAssignment = assignments[index].copy(
+      isCompleted = isCompleted
+    )
+
+    assignments[index] = updatedAssignment
+    _assignmentsFlow.value = assignments.toList()
+  }
+
+  override fun observeAssignmentById(assignmentId: Int): Flow<Assignment?> {
+    return assignmentsFlow.map { assignments ->
+      assignments.firstOrNull { assignment ->
+        assignment.id == assignmentId
+      }
+    }
+  }
+  override fun observeAssignmentsForCourse(courseId: Int): Flow<List<Assignment>> {
+    return assignmentsFlow.map { assignments ->
+      assignments.filter { assignment ->
+        assignment.courseId == courseId
+      }
     }
   }
 }

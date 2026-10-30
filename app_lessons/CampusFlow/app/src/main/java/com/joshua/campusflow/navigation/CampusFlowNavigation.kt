@@ -38,6 +38,7 @@ import com.joshua.campusflow.ui.screens.CourseAssignmentsScreen
 import com.joshua.campusflow.ui.screens.CoursesScreen
 import com.joshua.campusflow.ui.screens.ProfileScreen
 import com.joshua.campusflow.ui.screens.TasksScreen
+import com.joshua.campusflow.ui.screens.assignments.AddAssignmentScreen
 import com.joshua.campusflow.ui.screens.assignments.AssignmentDetailsViewModel
 import com.joshua.campusflow.ui.screens.assignments.AssignmentsViewModel
 
@@ -174,6 +175,11 @@ fun CampusFlowNavigation(
                 backStack.add(
                   AssignmentDetails(assignmentId = assignmentId)
                 )
+              },
+              onAddAssignmentClick = {
+                backStack.add(
+                  AddAssignment(courseId = route.courseId)
+                )
               }
             )
           }
@@ -227,6 +233,19 @@ fun CampusFlowNavigation(
             AssignmentDetailsScreen(
               assignmentId = route.assignmentId,
               uiState = uiState,
+              onCompletionChange = { isCompleted ->
+                detailsViewModel.updateCompletion(isCompleted)
+              },
+              onBackClick = {
+                if (backStack.size > 1) {
+                  backStack.removeLastOrNull()
+                }
+              }
+            )
+          }
+
+          entry<AddAssignment> { route ->
+            AddAssignmentScreen(
               onBackClick = {
                 if (backStack.size > 1) {
                   backStack.removeLastOrNull()

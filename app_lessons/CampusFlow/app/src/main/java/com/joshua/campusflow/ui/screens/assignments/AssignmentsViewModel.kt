@@ -32,16 +32,20 @@ class AssignmentsViewModel(
       _uiState.value = AssignmentsUiState.Loading
 
       try {
-        val assignments = repository.getAssignmentsForCourse(courseId)
+        repository.observeAssignmentsForCourse(courseId)
+          .collect { assignments ->
 
-        _uiState.value = AssignmentsUiState.Success(
-          assignments = assignments
-        )
+            _uiState.value = AssignmentsUiState.Success(
+              assignments = assignments
+            )
+
+          }
+
       } catch (exception: CancellationException) {
         throw exception
       } catch (exception: Exception) {
         _uiState.value = AssignmentsUiState.Error(
-          message = "Unable to load assignments."
+          "Unable to load assignments."
         )
       }
     }

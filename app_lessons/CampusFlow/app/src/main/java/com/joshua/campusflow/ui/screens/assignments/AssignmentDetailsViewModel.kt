@@ -25,25 +25,22 @@ class AssignmentDetailsViewModel(
   init {
     loadAssignment()
   }
-
   private fun loadAssignment() {
     viewModelScope.launch {
-
       try {
-        val assignment = repository.getAssignmentById(assignmentId)
+        repository.observeAssignmentById(assignmentId)
+          .collect { assignment ->
+            _uiState.value = if (assignment != null) {
+              AssignmentDetailsUiState.Success(
+                assignment = assignment
+              )
+            } else {
+              AssignmentDetailsUiState.Error(
+                message = "No assignment found"
+              )
+            }
 
-        if (assignment != null) {
-          // Success
-          _uiState.value = AssignmentDetailsUiState.Success(
-            assignment = assignment
-          )
-        } else {
-          // Error
-          _uiState.value = AssignmentDetailsUiState.Error(
-            message = "No assignment found"
-          )
-        }
-
+          }
       } catch (exception: CancellationException) {
         throw exception
       } catch (exception: Exception) {
@@ -51,7 +48,23 @@ class AssignmentDetailsViewModel(
           message = "Unable to load assignment."
         )
       }
+    }
+  }
 
+  fun updateCompletion(isCompleted: Boolean) {
+    viewModelScope.launch {
+      try {
+        repository.updateAssignmentCompletion(
+          assignmentId = assignmentId,
+          isCompleted = isCompleted
+        )
+      } catch (exception: CancellationException) {
+        throw exception
+      } catch (exception: Exception) {
+        _uiState.value = AssignmentDetailsUiState.Error(
+          message = "Unable to update assignment."
+        )
+      }
     }
   }
 

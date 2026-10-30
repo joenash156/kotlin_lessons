@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -23,6 +24,7 @@ import com.joshua.campusflow.ui.components.AssignmentCard
 import com.joshua.campusflow.ui.components.CampusFlowTopAppBar
 import com.joshua.campusflow.ui.screens.assignments.AssignmentsUiState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.filled.Add
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,7 +33,9 @@ fun CourseAssignmentsScreen(
   uiState: AssignmentsUiState,
   onAssignmentClick: (Int) -> Unit,
   onBackClick: () -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
+  onAddAssignmentClick: () -> Unit
+
 ) {
 
   Scaffold(
@@ -40,6 +44,18 @@ fun CourseAssignmentsScreen(
      CampusFlowTopAppBar(
        title = "Assignments",
        onBackClick = onBackClick,
+       actions = {
+         IconButton(
+           onClick = onAddAssignmentClick
+         ) {
+           Icon(
+             imageVector = Icons.Default.Add,
+             contentDescription = "Add assignment",
+             modifier = Modifier
+               .size(26.dp)
+           )
+         }
+       }
      )
    }
   ) { innerPadding ->

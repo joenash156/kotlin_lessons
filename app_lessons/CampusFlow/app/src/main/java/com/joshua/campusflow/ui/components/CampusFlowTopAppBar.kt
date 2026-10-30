@@ -1,7 +1,11 @@
 package com.joshua.campusflow.ui.components
 
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -15,11 +19,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
 enum class CampusFlowAppBarStyle {
   Regular,
   Large
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,7 +36,8 @@ fun CampusFlowTopAppBar(
   style: CampusFlowAppBarStyle = CampusFlowAppBarStyle.Regular,
   expandedHeight: Dp? = null,
   collapsedHeight: Dp = TopAppBarDefaults.LargeAppBarCollapsedHeight,
-  scrollBehavior: TopAppBarScrollBehavior? = null
+  scrollBehavior: TopAppBarScrollBehavior? = null,
+  actions: @Composable RowScope.() -> Unit = {},
 ) {
   val navigationIcon: @Composable () -> Unit = {
     IconButton(onClick = onBackClick) {
@@ -51,7 +58,8 @@ fun CampusFlowTopAppBar(
   when (style) {
     CampusFlowAppBarStyle.Regular -> {
       TopAppBar(
-        modifier = modifier,
+        modifier = modifier
+          .padding(end = 6.dp),
         title = {
           Text(
             title,
@@ -63,7 +71,8 @@ fun CampusFlowTopAppBar(
         expandedHeight = expandedHeight
           ?: TopAppBarDefaults.TopAppBarExpandedHeight,
         scrollBehavior = scrollBehavior,
-        colors = appBarColors
+        colors = appBarColors,
+        actions = actions
       )
     }
 
@@ -81,7 +90,8 @@ fun CampusFlowTopAppBar(
           ?: TopAppBarDefaults.LargeAppBarExpandedHeight,
         collapsedHeight = collapsedHeight,
         scrollBehavior = scrollBehavior,
-        colors = appBarColors
+        colors = appBarColors,
+        actions = actions
       )
     }
   }

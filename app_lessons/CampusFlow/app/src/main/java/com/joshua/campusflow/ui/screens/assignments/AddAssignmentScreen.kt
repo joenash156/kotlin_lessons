@@ -40,13 +40,12 @@ fun AddAssignmentScreen(
 
   val titleState = rememberTextFieldState()
   val descriptionState = rememberTextFieldState()
-  var titleHasError by rememberSaveable { mutableStateOf(false) }
-  var descriptionHasError by rememberSaveable { mutableStateOf(false) }
+  var hasAttemptedSave by rememberSaveable { mutableStateOf(false) }
 
-  val interactionSource = remember {
-    MutableInteractionSource()
-  }
+  val titleHasError = hasAttemptedSave && titleState.text.isBlank()
+  val descriptionHasError = hasAttemptedSave && descriptionState.text.isBlank()
 
+  val interactionSource = remember { MutableInteractionSource() }
   val isPressed by interactionSource.collectIsPressedAsState()
 
   val scale by animateFloatAsState(
@@ -119,16 +118,15 @@ fun AddAssignmentScreen(
 
       Button(
         onClick = {
+          hasAttemptedSave = true
+
           val title = titleState.text.toString().trim()
           val description = descriptionState.text.toString().trim()
 
-          titleHasError = title.isBlank()
-          descriptionHasError = description.isBlank()
-
-          if (!titleHasError && !descriptionHasError) {
+          if (title.isNotBlank() && description.isNotBlank()) {
             Log.d(
               "CampusFlow",
-              "Title: ${title}\nDescription: ${descriptionState.text}"
+              "Title: $title\nDescription: $description"
             )
           }
         },

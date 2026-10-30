@@ -65,6 +65,8 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodel.compose)
   implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+
+  implementation("dev.chrisbanes.haze:haze:1.7.2")
 }
 
 //  implementation(libs.androidx.material3)

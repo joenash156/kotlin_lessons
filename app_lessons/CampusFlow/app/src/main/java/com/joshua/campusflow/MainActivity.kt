@@ -55,6 +55,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.input.pointer.PointerType
 import androidx.compose.ui.input.pointer.pointerInput
+import com.joshua.campusflow.ui.components.LocalBottomBarPadding
 import kotlinx.coroutines.launch
 
 
@@ -173,7 +174,7 @@ fun DashboardScreen(
           }
         )
       },
-    contentPadding = PaddingValues(12.dp),
+    contentPadding = PaddingValues(12.dp, bottom = LocalBottomBarPadding.current + 16.dp),
     verticalArrangement = Arrangement.spacedBy(12.dp)
   ) {
 

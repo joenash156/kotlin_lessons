@@ -23,6 +23,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
@@ -38,6 +40,8 @@ fun AddAssignmentScreen(
 
   val titleState = rememberTextFieldState()
   val descriptionState = rememberTextFieldState()
+  var titleHasError by rememberSaveable { mutableStateOf(false) }
+  var descriptionHasError by rememberSaveable { mutableStateOf(false) }
 
   val interactionSource = remember {
     MutableInteractionSource()
@@ -83,7 +87,13 @@ fun AddAssignmentScreen(
           Text("e.g. HTML and CSS Lab")
         },
         lineLimits = TextFieldLineLimits.SingleLine,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        isError = titleHasError,
+        supportingText = {
+          if (titleHasError) {
+            Text("Assignment title is required")
+          }
+        },
       )
 
       OutlinedTextField(
@@ -98,12 +108,29 @@ fun AddAssignmentScreen(
           minHeightInLines = 3,
           maxHeightInLines = 6
         ),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        isError = descriptionHasError,
+        supportingText = {
+          if (descriptionHasError) {
+            Text("Description is required")
+          }
+        },
       )
 
       Button(
         onClick = {
-          Log.d("Output","Title: ${titleState.text} \n Description: ${descriptionState.text}")
+          val title = titleState.text.toString().trim()
+          val description = descriptionState.text.toString().trim()
+
+          titleHasError = title.isBlank()
+          descriptionHasError = description.isBlank()
+
+          if (!titleHasError && !descriptionHasError) {
+            Log.d(
+              "CampusFlow",
+              "Title: ${title}\nDescription: ${descriptionState.text}"
+            )
+          }
         },
         interactionSource = interactionSource,
         modifier = Modifier

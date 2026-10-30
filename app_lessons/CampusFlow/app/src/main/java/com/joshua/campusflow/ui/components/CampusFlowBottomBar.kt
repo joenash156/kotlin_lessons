@@ -1,11 +1,14 @@
 package com.joshua.campusflow.ui.components
 
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.navigation3.runtime.NavKey
 import com.joshua.campusflow.R
@@ -37,7 +40,14 @@ fun CampusFlowBottomBar(
         Text(
           text = "Home"
         )
-      }
+      },
+      colors = NavigationBarItemDefaults.colors(
+        selectedIconColor = MaterialTheme.colorScheme.primary,
+        selectedTextColor = MaterialTheme.colorScheme.primary,
+        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        indicatorColor = Color.Transparent
+      )
     )
     NavigationBarItem(
       selected = selectedRoute == CoursesRoute,
@@ -54,7 +64,14 @@ fun CampusFlowBottomBar(
         Text(
           text = "Courses"
         )
-      }
+      },
+      colors = NavigationBarItemDefaults.colors(
+        selectedIconColor = MaterialTheme.colorScheme.primary,
+        selectedTextColor = MaterialTheme.colorScheme.primary,
+        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        indicatorColor = Color.Transparent
+      )
     )
     NavigationBarItem(
       selected = selectedRoute == TasksRoute,
@@ -71,7 +88,14 @@ fun CampusFlowBottomBar(
         Text(
           text = "Tasks"
         )
-      }
+      },
+      colors = NavigationBarItemDefaults.colors(
+        selectedIconColor = MaterialTheme.colorScheme.primary,
+        selectedTextColor = MaterialTheme.colorScheme.primary,
+        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        indicatorColor = Color.Transparent
+      )
     )
     NavigationBarItem(
       selected = selectedRoute == ProfileRoute,
@@ -88,7 +112,14 @@ fun CampusFlowBottomBar(
         Text(
           text = "Profile"
         )
-      }
+      },
+      colors = NavigationBarItemDefaults.colors(
+        selectedIconColor = MaterialTheme.colorScheme.primary,
+        selectedTextColor = MaterialTheme.colorScheme.primary,
+        unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        indicatorColor = Color.Transparent
+      )
     )
   }
 }

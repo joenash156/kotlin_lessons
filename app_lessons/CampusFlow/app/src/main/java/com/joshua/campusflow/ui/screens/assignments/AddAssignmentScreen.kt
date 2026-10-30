@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,7 +53,10 @@ import java.time.format.DateTimeFormatter
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddAssignmentScreen(
+  uiState: AddAssignmentUiState,
+  onSaveAssignment: (String, String, LocalDate) -> Unit,
   onBackClick: () -> Unit,
+  onAssignmentSaved: () -> Unit,
   modifier: Modifier = Modifier
 ) {
 
@@ -79,6 +83,8 @@ fun AddAssignmentScreen(
 
   val interactionSource = remember { MutableInteractionSource() }
   val isPressed by interactionSource.collectIsPressedAsState()
+
+  val isSaving = uiState is AddAssignmentUiState.Saving
 
   val scale by animateFloatAsState(
     targetValue = if(isPressed) 0.97f else 1f,
@@ -193,14 +199,16 @@ fun AddAssignmentScreen(
               showDatePicker = true
             }
             else -> {
-              Log.d(
-                "CampusFlow",
-                "Title: $title\nDescription: $description\nDue Date: ${selectedDueDate?.format(dateFormatter)}"
+              onSaveAssignment(
+                title,
+                description,
+                selectedDueDate
               )
             }
           }
         },
         interactionSource = interactionSource,
+        enabled = !isSaving,
         modifier = Modifier
           .fillMaxWidth()
           .graphicsLayer(
@@ -209,10 +217,25 @@ fun AddAssignmentScreen(
           )
       ) {
         Text(
-          text = "Save Assignment",
+          text = if (isSaving) "Saving..." else "Save Assignment",
           style = MaterialTheme.typography.titleMedium
         )
       }
+
+      if (uiState is AddAssignmentUiState.Error) {
+        Text(
+          text = uiState.message,
+          color = MaterialTheme.colorScheme.error,
+          style = MaterialTheme.typography.bodyMedium
+        )
+      }
+
+      LaunchedEffect(uiState) {
+        if (uiState is AddAssignmentUiState.Success) {
+          onAssignmentSaved()
+        }
+      }
+
 
     }
   }

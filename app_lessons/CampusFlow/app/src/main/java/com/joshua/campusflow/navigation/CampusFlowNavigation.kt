@@ -32,13 +32,13 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.joshua.campusflow.DashboardScreen
 import com.joshua.campusflow.data.repository.InMemoryAssignmentRepository
-import com.joshua.campusflow.ui.components.CampusFlowBottomBar
 import com.joshua.campusflow.ui.screens.AssignmentDetailsScreen
 import com.joshua.campusflow.ui.screens.CourseAssignmentsScreen
 import com.joshua.campusflow.ui.screens.CoursesScreen
 import com.joshua.campusflow.ui.screens.ProfileScreen
 import com.joshua.campusflow.ui.screens.TasksScreen
 import com.joshua.campusflow.ui.screens.assignments.AddAssignmentScreen
+import com.joshua.campusflow.ui.screens.assignments.AddAssignmentViewModel
 import com.joshua.campusflow.ui.screens.assignments.AssignmentDetailsViewModel
 import com.joshua.campusflow.ui.screens.assignments.AssignmentsViewModel
 
@@ -245,7 +245,31 @@ fun CampusFlowNavigation(
           }
 
           entry<AddAssignment> { route ->
+            val addAssignmentViewModel: AddAssignmentViewModel = viewModel(
+              factory = AddAssignmentViewModel.factory(
+                repository = assignmentRepository,
+                courseId = route.courseId
+              )
+            )
+
+            val uiState by addAssignmentViewModel.uiState.collectAsStateWithLifecycle()
+
             AddAssignmentScreen(
+              uiState = uiState,
+              onSaveAssignment = { title, description, dueDate ->
+                addAssignmentViewModel.saveAssignment(
+                  title = title,
+                  description = description,
+                  dueDate = dueDate
+                )
+              },
+              onAssignmentSaved = {
+                addAssignmentViewModel.onSaveSuccessHandled()
+
+                if (backStack.size > 1) {
+                  backStack.removeLastOrNull()
+                }
+              },
               onBackClick = {
                 if (backStack.size > 1) {
                   backStack.removeLastOrNull()

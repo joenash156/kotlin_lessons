@@ -88,4 +88,27 @@ class InMemoryAssignmentRepository : AssignmentRepository {
       }
     }
   }
+
+  override suspend fun createAssignment(
+    courseId: Int,
+    title: String,
+    description: String,
+    dueDate: LocalDate
+  ): Assignment {
+
+    val nextId = (assignments.maxOfOrNull { it.id } ?: 0) + 1
+
+    val newAssignment = Assignment(
+      id = nextId,
+      courseId = courseId,
+      title = title,
+      description = description,
+      dueDate = dueDate
+    )
+
+    assignments.add(newAssignment)
+    _assignmentsFlow.value = assignments.toList()
+
+    return newAssignment
+  }
 }

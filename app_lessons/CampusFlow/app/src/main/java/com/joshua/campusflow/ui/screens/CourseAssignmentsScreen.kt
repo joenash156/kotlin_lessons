@@ -1,12 +1,13 @@
 package com.joshua.campusflow.ui.screens
 
+import android.R.attr.onClick
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,7 +25,22 @@ import com.joshua.campusflow.ui.components.AssignmentCard
 import com.joshua.campusflow.ui.components.CampusFlowTopAppBar
 import com.joshua.campusflow.ui.screens.assignments.AssignmentsUiState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Assignment
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Assignment
+import androidx.compose.material.icons.filled.Book
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.SmallFloatingActionButton
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,9 +54,90 @@ fun CourseAssignmentsScreen(
 
 ) {
 
+  var expanded by rememberSaveable { mutableStateOf(false) }
+
   Scaffold(
     modifier = modifier,
-   topBar = {
+    floatingActionButton = {
+      Column(
+        horizontalAlignment = Alignment.End,
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+      ) {
+        AnimatedVisibility(visible = expanded) {
+          Column(
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+          ) {
+            SmallFloatingActionButton(
+              onClick = {
+                expanded = false
+                // Add Assignment action
+                onAddAssignmentClick()
+              },
+              modifier = Modifier
+                .padding(end = 5.dp),
+              shape = RoundedCornerShape(20.dp)
+            ) {
+              Icon(
+                imageVector = Icons.AutoMirrored.Filled.Assignment,
+                contentDescription = "Add Assignment"
+              )
+            }
+
+            SmallFloatingActionButton(
+              onClick = {
+                expanded = false
+                // Add Course action
+              },
+              modifier = Modifier
+                .padding(end = 5.dp),
+              shape = RoundedCornerShape(20.dp)
+            ) {
+              Icon(
+                imageVector = Icons.Default.Book,
+                contentDescription = "Add Course"
+              )
+            }
+
+            SmallFloatingActionButton(
+              onClick = {
+                expanded = false
+                // Add Task action
+              },
+              modifier = Modifier
+                .padding(end = 5.dp),
+              shape = RoundedCornerShape(20.dp)
+            ) {
+              Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = "Add Task"
+              )
+            }
+          }
+        }
+
+        FloatingActionButton(
+          onClick = {
+            expanded = !expanded
+          },
+          shape = RoundedCornerShape(30.dp)
+        ) {
+          Icon(
+            imageVector = if (expanded) {
+              Icons.Default.Close
+            } else {
+              Icons.Default.Add
+            },
+            contentDescription = if (expanded) {
+              "Close menu"
+            } else {
+              "Open menu"
+            }
+          )
+        }
+      }
+    },
+    topBar = {
      CampusFlowTopAppBar(
        title = "Assignments",
        onBackClick = onBackClick,
@@ -57,7 +154,7 @@ fun CourseAssignmentsScreen(
          }
        }
      )
-   }
+    }
   ) { innerPadding ->
     Column(
       modifier = Modifier

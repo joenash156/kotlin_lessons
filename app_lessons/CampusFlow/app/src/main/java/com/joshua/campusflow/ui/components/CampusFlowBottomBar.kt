@@ -33,6 +33,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
@@ -59,6 +60,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation3.runtime.NavKey
@@ -79,9 +81,66 @@ import kotlinx.coroutines.launch
  */
 val LocalBottomBarPadding = compositionLocalOf { 0.dp }
 
-// ---------------------------------------------------------------------------
+// ===========================================================================
+// ALL THE KNOBS — change these to restyle the bar
+// ===========================================================================
+
+@Immutable
+data class CampusFlowBarStyle(
+
+  // ---- Bar size & position ------------------------------------------------
+  /** Height of the pill itself. */
+  val height: Dp = 58.dp,
+  /** Space between the bar and the left/right screen edges. */
+  val horizontalMargin: Dp = 24.dp,
+  /** Space above and below the bar (below = gap above the gesture area). */
+  val verticalMargin: Dp = 10.dp,
+  /** Corner radius of the bar. null = fully round pill ends. */
+  val cornerRadius: Dp? = null,
+  /** Gap between the bar's edge and the indicator / tabs. */
+  val contentPadding: Dp = 4.dp,
+
+  // ---- Glass --------------------------------------------------------------
+  /** How blurry the content behind looks. 0.dp = no blur. */
+  val blurRadius: Dp = 24.dp,
+  /** How strongly the bar is tinted. Lower = more see-through. */
+  val glassTintAlpha: Float = 0.55f,
+  /** Thickness of the light rim around the bar. 0.dp = no rim. */
+  val borderWidth: Dp = 0.5.dp,
+
+  // ---- Icon & label -------------------------------------------------------
+  val iconSize: Dp = 24.dp,
+  /** Space between the icon and its label. */
+  val iconLabelSpacing: Dp = 1.dp,
+  val labelFontSize: TextUnit = 12.sp,
+  val showLabels: Boolean = true,
+
+  // ---- Indicator (the pill behind the selected tab) -----------------------
+  /** Corner radius of the indicator. null = fully round pill. */
+  val indicatorCornerRadius: Dp? = null,
+  /** Shrinks the indicator from the left and right of its tab. */
+  val indicatorHorizontalInset: Dp = 0.dp,
+  /** Shrinks the indicator from the top and bottom. */
+  val indicatorVerticalInset: Dp = 0.dp,
+  /** Indicator fill strength (dark theme; light theme uses 70% of this). */
+  val indicatorAlpha: Float = 0.20f,
+  /** Outline thickness of the indicator. 0.dp = no outline. */
+  val indicatorBorderWidth: Dp = 1.dp,
+  /** How much the indicator thins while stretching. 0f = no thinning. */
+  val indicatorStretchThinning: Float = 0.10f,
+
+  // ---- Motion -------------------------------------------------------------
+  /** Speed of the indicator's front edge. Higher = snappier. */
+  val indicatorLeadStiffness: Float = 520f,
+  /** Speed of the indicator's back edge. Lower = longer, gooier stretch. */
+  val indicatorTrailStiffness: Float = 210f,
+  /** How small a tab gets while pressed. 1f = no shrink. */
+  val pressScale: Float = 0.86f,
+)
+
+// ===========================================================================
 // Tab definitions
-// ---------------------------------------------------------------------------
+// ===========================================================================
 
 /** The little "personality" animation each icon plays when its tab is selected. */
 private enum class IconMotion {
@@ -106,18 +165,16 @@ private val BottomTabs = listOf(
   BottomTab(ProfileRoute, "Profile", R.drawable.heroicons_user, R.drawable.heroicons_user_fill, IconMotion.Wiggle),
 )
 
-private val BarHeight: Dp = 64.dp
-private val BarInset: Dp = 4.dp
-
-// ---------------------------------------------------------------------------
+// ===========================================================================
 // The bar
-// ---------------------------------------------------------------------------
+// ===========================================================================
 
 /**
  * Telegram-style floating glass navigation bar.
  *
  * @param hazeState the same HazeState that the screen content uses in
  *   Modifier.hazeSource(...). Pass null to get a solid translucent bar without blur.
+ * @param style every size, shape and motion setting — see [CampusFlowBarStyle].
  */
 @Composable
 fun CampusFlowBottomBar(
@@ -125,49 +182,57 @@ fun CampusFlowBottomBar(
   onTabSelected: (NavKey) -> Unit,
   modifier: Modifier = Modifier,
   hazeState: HazeState? = null,
+  style: CampusFlowBarStyle = CampusFlowBarStyle(),
 ) {
   val colors = MaterialTheme.colorScheme
   val isDark = colors.background.luminance() < 0.5f
   val haptics = LocalHapticFeedback.current
   val selectedIndex = BottomTabs.indexOfFirst { it.route == selectedRoute }.coerceAtLeast(0)
 
-  val pill = RoundedCornerShape(percent = 50)
+  val barShape = style.cornerRadius?.let { RoundedCornerShape(it) } ?: RoundedCornerShape(percent = 50)
   val rim = if (isDark) Color.White else Color.Black
+  val indicatorAlpha = if (isDark) style.indicatorAlpha else style.indicatorAlpha * 0.7f
 
   Box(
     modifier = modifier
       .fillMaxWidth()
       .navigationBarsPadding()
-      .padding(horizontal = 24.dp, vertical = 10.dp),
+      .padding(horizontal = style.horizontalMargin, vertical = style.verticalMargin),
   ) {
     Box(
       modifier = Modifier
         .fillMaxWidth()
-        .height(BarHeight)
-        .clip(pill)
+        .height(style.height)
+        .clip(barShape)
         .glass(
           hazeState = hazeState,
           sourceBackground = colors.background,
           tint = colors.surface,
+          blurRadius = style.blurRadius,
+          tintAlpha = style.glassTintAlpha,
         )
-        // Thin light rim along the top edge — sells the "glass" look.
-        .border(
-          width = 1.dp,
-          brush = Brush.verticalGradient(
-            listOf(
-              rim.copy(alpha = if (isDark) 0.16f else 0.10f),
-              rim.copy(alpha = 0.03f),
+        .then(
+          if (style.borderWidth > 0.dp) {
+            Modifier.border(
+              width = style.borderWidth,
+              brush = Brush.verticalGradient(
+                listOf(
+                  rim.copy(alpha = if (isDark) 0.16f else 0.10f),
+                  rim.copy(alpha = 0.03f),
+                )
+              ),
+              shape = barShape,
             )
-          ),
-          shape = pill,
+          } else Modifier
         )
-        .padding(BarInset),
+        .padding(style.contentPadding),
     ) {
       LiquidIndicator(
         selectedIndex = selectedIndex,
         itemCount = BottomTabs.size,
-        fill = colors.primary.copy(alpha = if (isDark) 0.20f else 0.14f),
+        fill = colors.primary.copy(alpha = indicatorAlpha),
         outline = colors.primary.copy(alpha = 0.18f),
+        style = style,
       )
 
       Row(
@@ -181,6 +246,7 @@ fun CampusFlowBottomBar(
             selected = index == selectedIndex,
             activeColor = colors.primary,
             inactiveColor = colors.onSurfaceVariant,
+            style = style,
             onClick = {
               if (index != selectedIndex) {
                 haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -199,23 +265,25 @@ private fun Modifier.glass(
   hazeState: HazeState?,
   sourceBackground: Color,
   tint: Color,
+  blurRadius: Dp,
+  tintAlpha: Float,
 ): Modifier =
   if (hazeState == null) {
     this.background(tint.copy(alpha = 0.94f))
   } else {
     this.hazeEffect(state = hazeState) {
       backgroundColor = sourceBackground
-      tints = listOf(HazeTint(tint.copy(alpha = 0.55f)))
-      blurRadius = 24.dp
+      tints = listOf(HazeTint(tint.copy(alpha = tintAlpha)))
+      this.blurRadius = blurRadius
       noiseFactor = 0.04f
       // Used on devices where blur isn't available.
       fallbackTint = HazeTint(tint.copy(alpha = 0.94f))
     }
   }
 
-// ---------------------------------------------------------------------------
+// ===========================================================================
 // Sliding "liquid" indicator
-// ---------------------------------------------------------------------------
+// ===========================================================================
 
 /**
  * The pill behind the selected tab.
@@ -231,6 +299,7 @@ private fun LiquidIndicator(
   itemCount: Int,
   fill: Color,
   outline: Color,
+  style: CampusFlowBarStyle,
 ) {
   // Edges are stored in "tab units": tab 2 spans from 2f to 3f.
   val start = remember { Animatable(selectedIndex.toFloat()) }
@@ -239,8 +308,8 @@ private fun LiquidIndicator(
   LaunchedEffect(selectedIndex) {
     val target = selectedIndex.toFloat()
     val movingRight = target > start.value
-    val leading = spring<Float>(dampingRatio = 0.78f, stiffness = 520f)
-    val trailing = spring<Float>(dampingRatio = 0.86f, stiffness = 210f)
+    val leading = spring<Float>(dampingRatio = 0.78f, stiffness = style.indicatorLeadStiffness)
+    val trailing = spring<Float>(dampingRatio = 0.86f, stiffness = style.indicatorTrailStiffness)
     launch { start.animateTo(target, if (movingRight) trailing else leading) }
     launch { end.animateTo(target + 1f, if (movingRight) leading else trailing) }
   }
@@ -250,30 +319,37 @@ private fun LiquidIndicator(
       .fillMaxSize()
       .drawBehind {
         val slot = size.width / itemCount
-        val stretch = ((end.value - start.value) - 1f).coerceIn(0f, 3f)
-        val squash = (stretch * 0.10f).coerceAtMost(0.18f)
+        val hInset = style.indicatorHorizontalInset.toPx()
+        val vInset = style.indicatorVerticalInset.toPx()
 
-        val h = size.height * (1f - squash)
+        val stretch = ((end.value - start.value) - 1f).coerceIn(0f, 3f)
+        val squash = (stretch * style.indicatorStretchThinning).coerceIn(0f, 0.5f)
+
+        val fullHeight = size.height - 2 * vInset
+        val h = fullHeight * (1f - squash)
         val top = (size.height - h) / 2f
-        val left = start.value * slot
-        val width = (end.value - start.value) * slot
-        val radius = CornerRadius(h / 2f)
+        val left = start.value * slot + hInset
+        val width = ((end.value - start.value) * slot - 2 * hInset).coerceAtLeast(0f)
+        val r = style.indicatorCornerRadius?.toPx()?.coerceAtMost(h / 2f) ?: (h / 2f)
+        val radius = CornerRadius(r)
 
         drawRoundRect(fill, Offset(left, top), Size(width, h), radius)
-        drawRoundRect(
-          color = outline,
-          topLeft = Offset(left, top),
-          size = Size(width, h),
-          cornerRadius = radius,
-          style = Stroke(width = 1.dp.toPx()),
-        )
+        if (style.indicatorBorderWidth > 0.dp) {
+          drawRoundRect(
+            color = outline,
+            topLeft = Offset(left, top),
+            size = Size(width, h),
+            cornerRadius = radius,
+            style = Stroke(width = style.indicatorBorderWidth.toPx()),
+          )
+        }
       },
   )
 }
 
-// ---------------------------------------------------------------------------
+// ===========================================================================
 // One tab
-// ---------------------------------------------------------------------------
+// ===========================================================================
 
 @Composable
 private fun RowScope.BarTab(
@@ -281,6 +357,7 @@ private fun RowScope.BarTab(
   selected: Boolean,
   activeColor: Color,
   inactiveColor: Color,
+  style: CampusFlowBarStyle,
   onClick: () -> Unit,
 ) {
   val interaction = remember { MutableInteractionSource() }
@@ -288,7 +365,7 @@ private fun RowScope.BarTab(
 
   // Shrinks a little while your finger is down, springs back on release.
   val pressScale by animateFloatAsState(
-    targetValue = if (pressed) 0.86f else 1f,
+    targetValue = if (pressed) style.pressScale else 1f,
     animationSpec = spring(dampingRatio = 0.55f, stiffness = Spring.StiffnessMediumLow),
     label = "pressScale",
   )
@@ -321,22 +398,30 @@ private fun RowScope.BarTab(
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Center,
   ) {
-    TabIcon(tab = tab, selected = selected, selection = selection, tint = contentColor)
-    Spacer(Modifier.height(2.dp))
-    Text(
-      text = tab.label,
-      color = contentColor,
-      style = MaterialTheme.typography.labelSmall,
-      fontSize = 11.sp,
-      fontWeight = FontWeight.SemiBold,
-      maxLines = 1,
+    TabIcon(
+      tab = tab,
+      selected = selected,
+      selection = selection,
+      tint = contentColor,
+      iconSize = style.iconSize,
     )
+    if (style.showLabels) {
+      Spacer(Modifier.height(style.iconLabelSpacing))
+      Text(
+        text = tab.label,
+        color = contentColor,
+        style = MaterialTheme.typography.labelSmall,
+        fontSize = style.labelFontSize,
+        fontWeight = FontWeight.SemiBold,
+        maxLines = 1,
+      )
+    }
   }
 }
 
-// ---------------------------------------------------------------------------
+// ===========================================================================
 // Animated icon
-// ---------------------------------------------------------------------------
+// ===========================================================================
 
 @Composable
 private fun TabIcon(
@@ -344,6 +429,7 @@ private fun TabIcon(
   selected: Boolean,
   selection: Float,
   tint: Color,
+  iconSize: Dp,
 ) {
   val pop = remember { Animatable(1f) }     // scale
   val lift = remember { Animatable(0f) }    // vertical offset, in dp
@@ -408,7 +494,7 @@ private fun TabIcon(
 
   Box(
     modifier = Modifier
-      .size(28.dp)
+      .size(iconSize + 4.dp)
       .graphicsLayer {
         scaleX = pop.value
         scaleY = pop.value
@@ -429,7 +515,7 @@ private fun TabIcon(
         painter = painterResource(tab.icon),
         contentDescription = null, // the label below is read by TalkBack
         tint = tint,
-        modifier = Modifier.size(24.dp),
+        modifier = Modifier.size(iconSize),
       )
     } else {
       // Outline fades out while the filled icon fades in.
@@ -438,7 +524,7 @@ private fun TabIcon(
         contentDescription = null,
         tint = tint,
         modifier = Modifier
-          .size(24.dp)
+          .size(iconSize)
           .graphicsLayer { alpha = 1f - selection },
       )
       Icon(
@@ -446,7 +532,7 @@ private fun TabIcon(
         contentDescription = null,
         tint = tint,
         modifier = Modifier
-          .size(24.dp)
+          .size(iconSize)
           .graphicsLayer { alpha = selection },
       )
     }
